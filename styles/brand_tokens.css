@@ -1,0 +1,36 @@
+:root {
+  --deep: #2E7D72;
+  --deep-2: #1A5C54;
+  --dark: #1C2B2B;
+  --mint: #4CAF9C;
+  --soft-mint: #E8F5F2;
+  --beige: #F5F0E8;
+  --cream: #FFFCF5;
+  --gold: #C8A84B;
+  --line: rgba(46, 125, 114, .16);
+  --shadow: 0 24px 70px rgba(28, 43, 43, .10);
+  --soft-shadow: 0 14px 35px rgba(28, 43, 43, .08);
+  --radius: 28px;
+  --font-arabic: "Cairo", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  direction: rtl;
+}
+
+.hudna-card {
+  border-radius: var(--radius);
+  background: rgba(255,255,255,.64);
+  border: 1px solid rgba(46,125,114,.14);
+  box-shadow: var(--soft-shadow);
+}
+
+.hudna-wordmark {
+  font-family: var(--font-arabic);
+  font-weight: 900;
+  color: #0E4D49;
+  letter-spacing: -2px;
+}
+
+.hudna-tagline {
+  font-family: var(--font-arabic);
+  font-weight: 700;
+  color: var(--deep);
+}

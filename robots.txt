@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://hudna2.netlify.app/sitemap.xml
