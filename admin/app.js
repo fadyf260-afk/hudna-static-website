@@ -121,9 +121,10 @@ async function loadSite() {
     if (!siteResponse.ok || !revisionResponse.ok) throw new Error('local_server_required');
     const site = await siteResponse.json();
     siteRevision = (await revisionResponse.json()).revision;
-    for (const [key, id] of Object.entries({ seoTitle: 'site-seo-title', seoDescription: 'site-seo-description', heroTitle: 'site-hero-title', heroSubtitle: 'site-hero-subtitle' })) {
+    for (const [key, id] of Object.entries({ seoTitle: 'site-seo-title', seoDescription: 'site-seo-description', heroTitle: 'site-hero-title', heroSubtitle: 'site-hero-subtitle', primaryCtaText: 'site-primary-cta-text', primaryCtaHref: 'site-primary-cta-href', primaryCtaBadge: 'site-primary-cta-badge', howTitle: 'site-how-title', howDescription: 'site-how-description', soonTitle: 'site-soon-title', soonDescription: 'site-soon-description' })) {
       document.getElementById(id).value = site[key] || '';
     }
+    document.getElementById('feature-fields').innerHTML = (site.features || []).map((feature, index) => `<div class="card"><div class="field"><label for="feature-title-${index}">ميزة ${index + 1} — العنوان</label><input id="feature-title-${index}" name="featureTitle${index}" value="${esc(feature.title)}" required /></div><div class="field"><label for="feature-description-${index}">الوصف</label><textarea id="feature-description-${index}" name="featureDescription${index}" required>${esc(feature.description)}</textarea></div></div>`).join('');
   } catch { document.querySelector('#site-form button[type=submit]').disabled = true; }
 }
 
@@ -208,6 +209,8 @@ document.getElementById('delete-post').addEventListener('click', () => deletePos
 document.getElementById('site-form').addEventListener('submit', async event => {
   event.preventDefault();
   const site = Object.fromEntries(new FormData(event.target));
+  site.features = Array.from({ length: 5 }, (_, index) => ({ title: site[`featureTitle${index}`], description: site[`featureDescription${index}`] }));
+  for (let index = 0; index < 5; index++) { delete site[`featureTitle${index}`]; delete site[`featureDescription${index}`]; }
   try {
     const response = await fetch('/__save-site', {
       method: 'POST', headers: { 'Content-Type': 'application/json', 'X-Content-Revision': siteRevision },

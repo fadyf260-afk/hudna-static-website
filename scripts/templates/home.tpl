@@ -58,7 +58,7 @@
     <h1>{{HERO_TITLE}}</h1>
     <p class="subtitle">{{HERO_SUBTITLE}}</p>
     <div class="hero-ctas">
-      <a class="btn btn-primary" href="#soon">قريبًا على Google Play <span class="pill">Soon</span></a>
+      <a class="btn btn-primary" href="{{PRIMARY_CTA_HREF}}">{{PRIMARY_CTA_TEXT}} {{PRIMARY_CTA_BADGE}}</a>
       <a class="btn btn-ghost" href="/privacy-policy/">اعرف أكتر عن الخصوصية</a>
     </div>
   </div>
@@ -68,14 +68,10 @@
 <section class="section center" id="how">
   <div class="wrap">
     <span class="section-tag">كيف يساعدك هُدنة؟</span>
-    <h2>خطوات صغيرة قبل القرار</h2>
-    <p class="lead">مش برنامج دايت، ولا متابعة سعرات. مجرد وقفة لطيفة تفهم فيها نفسك أكتر.</p>
+    <h2>{{HOW_TITLE}}</h2>
+    <p class="lead">{{HOW_DESCRIPTION}}</p>
     <div class="grid cols-3" style="text-align:right">
-      <div class="card feature reveal"><span class="num">١</span><h3>وقفة قبل الطلب</h3><p>لحظة هدوء قصيرة قبل ما تقرر تاكل، تسأل فيها نفسك سؤال بسيط.</p></div>
-      <div class="card feature reveal"><span class="num">٢</span><h3>تمارين قصيرة وقت الرغبة</h3><p>تمارين هادئة ولطيفة تساعدك وقت ما الرغبة تزيد، من غير ضغط.</p></div>
-      <div class="card feature reveal"><span class="num">٣</span><h3>مواعيد الخطر</h3><p>هُدنة تنبّهك في الأوقات اللي بتلاحظ فيها نمط بيتكرر.</p></div>
-      <div class="card feature reveal"><span class="num">٤</span><h3>حارس المطاعم</h3><p>سند صغير قبل الطلب من برّه، عشان تاخد قرارك وأنت مرتاح.</p></div>
-      <div class="card feature reveal"><span class="num">٥</span><h3>تقرير أسبوعي</h3><p>للمستخدمين المسجلين — نظرة هادئة على نمط أسبوعك، من غير أرقام محرجة.</p></div>
+      {{FEATURES}}
     </div>
   </div>
 </section>
@@ -103,8 +99,8 @@
   <div class="wrap">
     <div class="card reveal" style="max-width:640px;margin-inline:auto;padding:40px 28px">
       <img src="/assets/hudna-app-icon.svg" alt="أيقونة تطبيق هُدنة" width="88" height="88" style="margin-bottom:18px" />
-      <h2 style="margin-bottom:10px">قريبًا على Google Play</h2>
-      <p class="lead" style="margin-bottom:24px">هُدنة في الطريق إليك. اعرف دلوقتي إزاي بنحافظ على خصوصيتك قبل ما تبدأ.</p>
+      <h2 style="margin-bottom:10px">{{SOON_TITLE}}</h2>
+      <p class="lead" style="margin-bottom:24px">{{SOON_DESCRIPTION}}</p>
       <a class="btn btn-ghost" href="/privacy-policy/">اقرأ سياسة الخصوصية</a>
     </div>
   </div>

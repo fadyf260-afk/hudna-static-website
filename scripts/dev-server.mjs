@@ -14,14 +14,24 @@ const esc = value => String(value ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;',
 const revision = value => createHash('sha256').update(value).digest('hex');
 
 export async function generateSite(site) {
-  const required = ['seoTitle', 'seoDescription', 'heroTitle', 'heroSubtitle'];
+  const required = ['seoTitle', 'seoDescription', 'heroTitle', 'heroSubtitle', 'primaryCtaText', 'primaryCtaHref', 'howTitle', 'howDescription', 'soonTitle', 'soonDescription'];
   if (required.some(key => typeof site[key] !== 'string' || !site[key].trim())) throw new Error('invalid_site_content');
+  if (!/^(#[-a-z0-9]+|\/(?!\/)|https:\/\/)/i.test(site.primaryCtaHref)) throw new Error('invalid_site_url');
+  if (!Array.isArray(site.features) || site.features.length !== 5 || site.features.some(feature => !feature.title?.trim() || !feature.description?.trim())) throw new Error('invalid_site_features');
   const template = await readFile(join(root, 'scripts', 'templates', 'home.tpl'), 'utf8');
   const replacements = {
     '{{SEO_TITLE}}': esc(site.seoTitle),
     '{{SEO_DESCRIPTION}}': esc(site.seoDescription),
     '{{HERO_TITLE}}': esc(site.heroTitle),
     '{{HERO_SUBTITLE}}': esc(site.heroSubtitle),
+    '{{PRIMARY_CTA_TEXT}}': esc(site.primaryCtaText),
+    '{{PRIMARY_CTA_HREF}}': esc(site.primaryCtaHref),
+    '{{PRIMARY_CTA_BADGE}}': site.primaryCtaBadge ? `<span class="pill">${esc(site.primaryCtaBadge)}</span>` : '',
+    '{{HOW_TITLE}}': esc(site.howTitle),
+    '{{HOW_DESCRIPTION}}': esc(site.howDescription),
+    '{{FEATURES}}': site.features.map((feature, index) => `<div class="card feature reveal"><span class="num">${'١٢٣٤٥'[index]}</span><h3>${esc(feature.title)}</h3><p>${esc(feature.description)}</p></div>`).join('\n      '),
+    '{{SOON_TITLE}}': esc(site.soonTitle),
+    '{{SOON_DESCRIPTION}}': esc(site.soonDescription),
   };
   const published = (await currentPosts()).filter(post => post.status === 'published').sort((a,b) => b.date.localeCompare(a.date)).slice(0, 2);
   replacements['{{FEATURED_POSTS}}'] = published.length ? `<section class="section" aria-labelledby="latest-posts"><div class="wrap"><span class="section-tag">من مدونة هُدنة</span><h2 id="latest-posts">اقرأ على مهلك</h2><p class="lead">مقالات قصيرة تساعدك تلاحظ احتياجاتك ومشاعرك.</p><div class="grid cols-2">${published.map(post => `<article class="card"><span class="section-tag">${esc(post.category)}</span><h3><a href="/blog/${encodeURIComponent(post.slug)}/">${esc(post.title)}</a></h3><p>${esc(post.description)}</p><a href="/blog/${encodeURIComponent(post.slug)}/" aria-label="اقرأ ${esc(post.title)}">اقرأ المقال ←</a></article>`).join('')}</div><p style="margin-top:22px"><a class="btn btn-ghost" href="/blog/">كل المقالات</a></p></div></section>` : '';
