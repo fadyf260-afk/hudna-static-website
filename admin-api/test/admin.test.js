@@ -75,6 +75,9 @@ test('only validated article content can be committed', async () => {
     const rejected = response();
     await handler(request([{ ...posts[0], content: '<script>alert(1)</script>' }]), rejected);
     assert.equal(rejected.statusCode, 400);
+    const lineBreak = response();
+    await handler(request([{ ...posts[0], content: '<p>سطر<br>سطر آخر</p>' }]), lineBreak);
+    assert.equal(lineBreak.statusCode, 200);
     const saved = response();
     await handler(request(posts), saved);
     assert.equal(saved.statusCode, 200);

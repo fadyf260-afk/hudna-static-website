@@ -72,7 +72,7 @@ function validate(path, content) {
       for (const field of ['title', 'description', 'category', 'date', 'content']) if (typeof post[field] !== 'string' || !post[field].trim()) return false;
       if (!['draft', 'published'].includes(post.status) || !Array.isArray(post.tags) || post.tags.some(tag => typeof tag !== 'string')) return false;
       if (post.title.length > 100 || post.description.length > 170 || post.content.length > 100000 || !/^\d{4}-\d{2}-\d{2}$/.test(post.date)) return false;
-      if (safeArticle(post.content) !== post.content) return false;
+      if (safeArticle(post.content).replaceAll('<br />', '<br>') !== post.content) return false;
       if (typeof post.cover !== 'string' || (post.cover && !/^(https:\/\/|\/(?!\/))/.test(post.cover))) return false;
     }
     return true;
