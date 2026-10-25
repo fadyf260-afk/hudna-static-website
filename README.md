@@ -1,5 +1,31 @@
 # موقع هُدنة
 
+## لوحة الإدارة أونلاين
+
+بعد إتمام الإعداد أدناه، افتح `https://hudnaapp.com/admin/` وسجّل الدخول بحساب GitHub `fadyf260-afk`. الحفظ يُحدّث ملفات المحتوى على فرع `main` مباشرةً، ثم يبني GitHub Actions الصفحات والمقالات وsitemap وRSS وينشرها على GitHub Pages. ظهور التغيير يستغرق عادةً بضع دقائق. يمكن الاستمرار في التحرير المحلي من VS Code أيضًا.
+
+### الإعداد لمرة واحدة
+
+1. ادمج هذا الفرع في `main` بعد مراجعة التغييرات. في **Settings → Pages → Build and deployment → Source** اختر **GitHub Actions**. الـworkflow في `.github/workflows/deploy-pages.yml` ينشر `.site-dist` ويحافظ على الدومين الموجود في `CNAME`.
+2. أنشئ **GitHub App** باسم مناسب، وحدّد **Callback URL**: `https://api.hudnaapp.com/api/admin`. اجعل صلاحية **Repository permissions → Contents** = **Read and write**، وثبّت التطبيق على مستودع `fadyf260-afk/hudna-static-website` فقط. استخدم **Client ID** و**Client secret** من إعدادات التطبيق؛ لا تضع السر في المستودع أو في المحادثة.
+3. على Vercel أنشئ مشروعًا جديدًا من **نفس المستودع** مع **Root Directory** = `admin-api` و**Framework Preset** = `Other`. أضف متغيرات البيئة للإنتاج:
+
+   | الاسم | القيمة |
+   | --- | --- |
+   | `API_ORIGIN` | `https://api.hudnaapp.com` |
+   | `ADMIN_ORIGIN` | `https://hudnaapp.com` |
+   | `GITHUB_APP_CLIENT_ID` | Client ID للتطبيق |
+   | `GITHUB_APP_CLIENT_SECRET` | Client secret للتطبيق |
+   | `GITHUB_ALLOWED_LOGIN` | `fadyf260-afk` |
+   | `GITHUB_REPO_OWNER` | `fadyf260-afk` |
+   | `GITHUB_REPO_NAME` | `hudna-static-website` |
+   | `SESSION_SECRET` | قيمة عشوائية طويلة (32 حرفًا على الأقل) |
+
+4. أضف `api.hudnaapp.com` إلى **Domains** في مشروع Vercel، ثم أضف سجل DNS من نوع CNAME للقيمة **التي يعرضها Vercel لهذا المشروع**. لا تغيّر سجلات `hudnaapp.com` الرئيسية؛ ستظل تشير إلى GitHub Pages. انتظر تفعيل HTTPS، ثم انشر مشروع Vercel مجددًا إذا أضفت المتغيرات بعد أول نشر.
+5. افتح `https://api.hudnaapp.com/api/admin?action=session` وتأكد أنه يعرض `authenticated: false`، ثم افتح `https://hudnaapp.com/admin/` وجرب الدخول، الحفظ، وتحقق من تشغيل **Actions → Publish Hudna site** وظهور التغيير على الموقع.
+
+جلسة GitHub تنتهي خلال 8 ساعات، ويمكن الدخول مرة أخرى. تسجيل الخروج يحذف الكوكي. واجهة الإدارة نفسها عامة لأن GitHub Pages ثابت، لكن قراءة المحتوى والتحرير عبر API مقصوران على الحساب المحدد. **المستودع عام، لذلك محتوى المسودات في `blog/posts.json` يمكن قراءته من GitHub حتى لو لم يظهر في صفحات الموقع أو ملفات النشر. لا تحفظ معلومات خاصة في المسودات.**
+
 الموقع مبني كصفحات ثابتة، لذلك يعمل على GitHub Pages ولا يحتاج خادم تطبيقات أو قاعدة بيانات.
 
 ## فتح الموقع ولوحة المدونة من VS Code

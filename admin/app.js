@@ -6,6 +6,46 @@ let posts = [];
 let editingSlug = null;
 let baseRevision = '';
 let siteRevision = '';
+const localMode = ['localhost', '127.0.0.1'].includes(location.hostname);
+const api = 'https://api.hudnaapp.com/api/admin';
+const apiUrl = (action, path = '') => `${api}?action=${action}${path ? `&path=${encodeURIComponent(path)}` : ''}`;
+let authenticated = localMode;
+
+async function remoteContent(path, content, sha) {
+  const response = await fetch(apiUrl('content', path), {
+    method: 'PUT', credentials: 'include', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ content, sha }),
+  });
+  const result = await response.json();
+  if (!response.ok) throw new Error(result.error || 'save_failed');
+  return result.sha;
+}
+
+async function start() {
+  if (localMode) {
+    document.getElementById('workflow-note').textContent = 'الوضع المحلي: احفظ التعديلات، ثم ارفعها عبر Source Control في VS Code. المقالات المنشورة فقط تظهر للزوار.';
+    load(); loadSite(); return;
+  }
+  document.getElementById('workflow-note').textContent = 'بعد الحفظ، يُنشأ commit في GitHub ويبدأ بناء الموقع ونشره تلقائيًا. قد يستغرق ظهور التغيير بضع دقائق.';
+  document.getElementById('sidebar-note').textContent = 'لوحة متصلة بمستودع GitHub';
+  try {
+    const response = await fetch(apiUrl('session'), { credentials: 'include', cache: 'no-store' });
+    if (!response.ok) throw new Error('api_unavailable');
+    const state = await response.json();
+    authenticated = state.authenticated;
+    if (authenticated) {
+      document.getElementById('account').textContent = state.login;
+      document.getElementById('logout').hidden = false;
+      document.getElementById('login-gate').hidden = true;
+      load(); loadSite();
+    } else {
+      document.getElementById('login-gate').hidden = false;
+      document.getElementById('login-error').textContent = new URLSearchParams(location.search).get('auth') === 'denied' ? 'هذا الحساب غير مخوّل بإدارة الموقع.' : '';
+    }
+  } catch {
+    document.getElementById('login-gate').hidden = false;
+    document.getElementById('login-error').textContent = 'خدمة الإدارة غير متاحة الآن. تأكد من إعداد api.hudnaapp.com.';
+  }
+}
 
 function notify(message) {
   const toast = document.getElementById('toast');
@@ -97,6 +137,12 @@ function openEditor(post) {
 
 async function load() {
   try {
+    if (!localMode) {
+      const response = await fetch(apiUrl('content', 'blog/posts.json'), { credentials: 'include', cache: 'no-store' });
+      if (!response.ok) throw new Error('remote_read_failed');
+      const data = await response.json();
+      posts = data.content; baseRevision = data.sha; render(); return;
+    }
     const [postsResponse, revisionResponse] = await Promise.all([
       fetch('/blog/posts.json', { cache: 'no-store' }),
       fetch('/__revision', { cache: 'no-store' }),
@@ -107,13 +153,21 @@ async function load() {
     render();
   } catch {
     document.getElementById('new-post').disabled = true;
-    rows.innerHTML = '<tr><td class="empty" colspan="6">شغّل npm run dev من مجلد المشروع، ثم افتح http://127.0.0.1:4173/admin/</td></tr>';
-    notify('اللوحة تحتاج خادم VS Code المحلي لحفظ الملفات.');
+    rows.innerHTML = `<tr><td class="empty" colspan="6">${localMode ? 'شغّل npm run dev من مجلد المشروع، ثم افتح http://127.0.0.1:4173/admin/' : 'تعذر تحميل المقالات من GitHub. حدّث الصفحة وحاول ثانية.'}</td></tr>`;
+    notify(localMode ? 'اللوحة تحتاج خادم VS Code المحلي لحفظ الملفات.' : 'تعذر الاتصال بخدمة إدارة المحتوى.');
   }
 }
 
 async function loadSite() {
   try {
+    if (!localMode) {
+      const response = await fetch(apiUrl('content', 'site-content.json'), { credentials: 'include', cache: 'no-store' });
+      if (!response.ok) throw new Error('remote_read_failed');
+      const data = await response.json();
+      siteRevision = data.sha;
+      populateSite(data.content);
+      return;
+    }
     const [siteResponse, revisionResponse] = await Promise.all([
       fetch('/site-content.json', { cache: 'no-store' }),
       fetch('/__site-revision', { cache: 'no-store' }),
@@ -121,11 +175,15 @@ async function loadSite() {
     if (!siteResponse.ok || !revisionResponse.ok) throw new Error('local_server_required');
     const site = await siteResponse.json();
     siteRevision = (await revisionResponse.json()).revision;
+    populateSite(site);
+  } catch { document.querySelector('#site-form button[type=submit]').disabled = true; }
+}
+
+function populateSite(site) {
     for (const [key, id] of Object.entries({ seoTitle: 'site-seo-title', seoDescription: 'site-seo-description', heroTitle: 'site-hero-title', heroSubtitle: 'site-hero-subtitle', primaryCtaText: 'site-primary-cta-text', primaryCtaHref: 'site-primary-cta-href', primaryCtaBadge: 'site-primary-cta-badge', howTitle: 'site-how-title', howDescription: 'site-how-description', soonTitle: 'site-soon-title', soonDescription: 'site-soon-description' })) {
       document.getElementById(id).value = site[key] || '';
     }
     document.getElementById('feature-fields').innerHTML = (site.features || []).map((feature, index) => `<div class="card"><div class="field"><label for="feature-title-${index}">ميزة ${index + 1} — العنوان</label><input id="feature-title-${index}" name="featureTitle${index}" value="${esc(feature.title)}" required /></div><div class="field"><label for="feature-description-${index}">الوصف</label><textarea id="feature-description-${index}" name="featureDescription${index}" required>${esc(feature.description)}</textarea></div></div>`).join('');
-  } catch { document.querySelector('#site-form button[type=submit]').disabled = true; }
 }
 
 async function save(status) {
@@ -145,6 +203,11 @@ async function save(status) {
   };
   const next = [...posts.filter(item => item.slug !== editingSlug), post];
   try {
+    if (!localMode) {
+      baseRevision = await remoteContent('blog/posts.json', next, baseRevision);
+      posts = next; dialog.close(); render();
+      notify('حُفظ المقال في GitHub. يبدأ النشر التلقائي الآن.'); return;
+    }
     const response = await fetch('/__save-post', {
       method: 'POST', headers: { 'Content-Type': 'application/json', 'X-Content-Revision': baseRevision },
       body: JSON.stringify({ posts: next }),
@@ -162,6 +225,11 @@ async function save(status) {
 async function deletePost(post) {
   if (!post || !confirm(`حذف المقال «${post.title}»؟`)) return;
   try {
+    if (!localMode) {
+      const next = posts.filter(item => item.slug !== post.slug);
+      baseRevision = await remoteContent('blog/posts.json', next, baseRevision);
+      posts = next; dialog.close(); render(); notify('حُذف المقال من GitHub، وسيُحدّث الموقع بعد النشر.'); return;
+    }
     const response = await fetch('/__delete-post', {
       method: 'POST', headers: { 'Content-Type': 'application/json', 'X-Content-Revision': baseRevision },
       body: JSON.stringify({ slug: post.slug }),
@@ -212,6 +280,10 @@ document.getElementById('site-form').addEventListener('submit', async event => {
   site.features = Array.from({ length: 5 }, (_, index) => ({ title: site[`featureTitle${index}`], description: site[`featureDescription${index}`] }));
   for (let index = 0; index < 5; index++) { delete site[`featureTitle${index}`]; delete site[`featureDescription${index}`]; }
   try {
+    if (!localMode) {
+      siteRevision = await remoteContent('site-content.json', site, siteRevision);
+      notify('حُفظت الصفحة الرئيسية في GitHub. يبدأ النشر التلقائي الآن.'); return;
+    }
     const response = await fetch('/__save-site', {
       method: 'POST', headers: { 'Content-Type': 'application/json', 'X-Content-Revision': siteRevision },
       body: JSON.stringify(site),
@@ -221,5 +293,9 @@ document.getElementById('site-form').addEventListener('submit', async event => {
     notify('تم تحديث الصفحة الرئيسية وملف بياناتها داخل المشروع.');
   } catch (error) { notify(error.message === 'revision_conflict' ? 'تغيرت الصفحة خارج اللوحة. حدّث الصفحة قبل الحفظ.' : `تعذر حفظ الصفحة: ${error.message}`); }
 });
-load();
-loadSite();
+document.getElementById('login-link').href = apiUrl('login');
+document.getElementById('logout').addEventListener('click', async () => {
+  await fetch(apiUrl('logout'), { method: 'POST', credentials: 'include' });
+  location.reload();
+});
+start();

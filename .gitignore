@@ -1,0 +1,5 @@
+.site-dist/
+node_modules/
+.env
+.env.*
+admin-api/.vercel/
