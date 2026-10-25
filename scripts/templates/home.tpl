@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>{{SEO_TITLE}}</title>
+<meta name="description" content="{{SEO_DESCRIPTION}}" />
+<link rel="canonical" href="https://hudnaapp.com/" />
+
+<!-- Open Graph -->
+<meta property="og:type" content="website" />
+<meta property="og:title" content="{{SEO_TITLE}}" />
+<meta property="og:description" content="{{SEO_DESCRIPTION}}" />
+<meta property="og:url" content="https://hudnaapp.com/" />
+<meta property="og:image" content="https://hudnaapp.com/assets/hudna-app-icon-512.png" />
+<meta property="og:locale" content="ar_AR" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="theme-color" content="#2E7D72" />
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"Organization","name":"هُدنة","url":"https://hudnaapp.com/","logo":"https://hudnaapp.com/assets/hudna-app-icon-512.png"}</script>
+
+<link rel="icon" href="/assets/favicon.ico" sizes="any" />
+<link rel="icon" type="image/png" href="/assets/favicon-32.png" sizes="32x32" />
+<link rel="apple-touch-icon" href="/assets/apple-touch-icon.png" />
+
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@500;700;800;900&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="/styles/global.css" />
+</head>
+<body>
+
+<!-- HEADER -->
+<header class="site-header">
+  <div class="wrap nav">
+    <a class="brand-lockup" href="/" aria-label="هُدنة — الصفحة الرئيسية">
+      <span class="mark"><img src="/assets/hudna-icon.svg" alt="شعار هُدنة" width="34" height="44" /></span>
+      <span class="word">هُدنة</span>
+    </a>
+    <button class="nav-toggle" aria-label="القائمة" aria-expanded="false" onclick="const n=document.getElementById('menu');const o=n.classList.toggle('open');this.setAttribute('aria-expanded',o)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+    </button>
+    <nav class="nav-links" id="menu">
+      <a href="/" class="active">الرئيسية</a>
+      <a href="/privacy-policy/">الخصوصية</a>
+      <a href="/terms/">الشروط</a>
+      <a href="/blog/">المدونة</a>
+      <a href="/delete-account/">حذف الحساب</a>
+      <a href="/contact/">تواصل معنا</a>
+    </nav>
+  </div>
+</header>
+
+<!-- HERO -->
+<section class="hero">
+  <img class="leaf-bg" src="/assets/hudna-leaf.svg" alt="" aria-hidden="true" />
+  <div class="wrap">
+    <img class="hero-mark" src="/assets/hudna-icon.svg" alt="شعار هُدنة" width="128" height="163" />
+    <h1>{{HERO_TITLE}}</h1>
+    <p class="subtitle">{{HERO_SUBTITLE}}</p>
+    <div class="hero-ctas">
+      <a class="btn btn-primary" href="#soon">قريبًا على Google Play <span class="pill">Soon</span></a>
+      <a class="btn btn-ghost" href="/privacy-policy/">اعرف أكتر عن الخصوصية</a>
+    </div>
+  </div>
+</section>
+
+<!-- HOW IT HELPS -->
+<section class="section center" id="how">
+  <div class="wrap">
+    <span class="section-tag">كيف يساعدك هُدنة؟</span>
+    <h2>خطوات صغيرة قبل القرار</h2>
+    <p class="lead">مش برنامج دايت، ولا متابعة سعرات. مجرد وقفة لطيفة تفهم فيها نفسك أكتر.</p>
+    <div class="grid cols-3" style="text-align:right">
+      <div class="card feature reveal"><span class="num">١</span><h3>وقفة قبل الطلب</h3><p>لحظة هدوء قصيرة قبل ما تقرر تاكل، تسأل فيها نفسك سؤال بسيط.</p></div>
+      <div class="card feature reveal"><span class="num">٢</span><h3>تمارين قصيرة وقت الرغبة</h3><p>تمارين هادئة ولطيفة تساعدك وقت ما الرغبة تزيد، من غير ضغط.</p></div>
+      <div class="card feature reveal"><span class="num">٣</span><h3>مواعيد الخطر</h3><p>هُدنة تنبّهك في الأوقات اللي بتلاحظ فيها نمط بيتكرر.</p></div>
+      <div class="card feature reveal"><span class="num">٤</span><h3>حارس المطاعم</h3><p>سند صغير قبل الطلب من برّه، عشان تاخد قرارك وأنت مرتاح.</p></div>
+      <div class="card feature reveal"><span class="num">٥</span><h3>تقرير أسبوعي</h3><p>للمستخدمين المسجلين — نظرة هادئة على نمط أسبوعك، من غير أرقام محرجة.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- WHY HUDNA -->
+<section class="section center" id="why">
+  <div class="wrap">
+    <span class="section-tag">لماذا هُدنة؟</span>
+    <h2>مساحة آمنة وهادئة</h2>
+    <div class="reasons" style="margin-top:26px">
+      <span class="reason"><span class="dot"></span>بدون لوم</span>
+      <span class="reason"><span class="dot"></span>بدون دايت</span>
+      <span class="reason"><span class="dot"></span>بدون سعرات</span>
+      <span class="reason"><span class="dot"></span>خصوصية أولًا</span>
+      <span class="reason"><span class="dot"></span>مناسب للموبايل</span>
+      <span class="reason"><span class="dot"></span>عربي بسيط وهادئ</span>
+    </div>
+  </div>
+</section>
+
+{{FEATURED_POSTS}}
+
+<!-- SOON CTA -->
+<section class="section center" id="soon">
+  <div class="wrap">
+    <div class="card reveal" style="max-width:640px;margin-inline:auto;padding:40px 28px">
+      <img src="/assets/hudna-app-icon.svg" alt="أيقونة تطبيق هُدنة" width="88" height="88" style="margin-bottom:18px" />
+      <h2 style="margin-bottom:10px">قريبًا على Google Play</h2>
+      <p class="lead" style="margin-bottom:24px">هُدنة في الطريق إليك. اعرف دلوقتي إزاي بنحافظ على خصوصيتك قبل ما تبدأ.</p>
+      <a class="btn btn-ghost" href="/privacy-policy/">اقرأ سياسة الخصوصية</a>
+    </div>
+  </div>
+</section>
+
+<!-- MEDICAL NOTICE -->
+<section class="section" id="notice">
+  <div class="wrap">
+    <div class="notice reveal">
+      <span class="ico"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 8v5"/><path d="M12 16h.01"/></svg></span>
+      <div>
+        <h3>تنبيه مهم</h3>
+        <p>هُدنة ليس بديلًا عن الطبيب أو المعالج النفسي، ولا يقدم تشخيصًا أو علاجًا. لو كنت في خطر أو تحتاج مساعدة عاجلة، تواصل مع خدمات الطوارئ أو مختص مناسب في بلدك.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer class="site-footer">
+  <div class="wrap">
+    <div class="footer-top">
+      <span class="mark"><img src="/assets/hudna-icon.svg" alt="" width="26" height="34" aria-hidden="true" /></span>
+      <span class="name">هُدنة — الأكل العاطفي</span>
+    </div>
+    <nav class="footer-links">
+      <a href="/blog/">المدونة</a>
+      <a href="/privacy-policy/">Privacy Policy</a>
+      <a href="/terms/">Terms</a>
+      <a href="/delete-account/">Delete Account</a>
+      <a href="/contact/">Contact</a>
+    </nav>
+    <div class="copyright">
+      <img class="leaf" src="/assets/hudna-footer-leaf.svg" alt="" aria-hidden="true" />
+      <span>© 2026 هُدنة. كل الحقوق محفوظة.</span>
+    </div>
+  </div>
+</footer>
+
+<script>
+  // Gentle reveal on scroll
+  const io = new IntersectionObserver((es)=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target)}}),{threshold:.12});
+  document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
+</script>
+</body>
+</html>
