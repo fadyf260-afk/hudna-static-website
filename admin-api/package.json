@@ -1,0 +1,12 @@
+{
+  "name": "hudna-admin-api",
+  "private": true,
+  "type": "module",
+  "scripts": { "test": "node --test" },
+  "engines": {
+    "node": ">=20"
+  },
+  "dependencies": {
+    "sanitize-html": "^2.18.1"
+  }
+}

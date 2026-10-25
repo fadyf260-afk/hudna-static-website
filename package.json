@@ -1,0 +1,14 @@
+{
+  "name": "hudna-static-website",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "node scripts/dev-server.mjs",
+    "build": "node scripts/build.mjs",
+    "package:pages": "node scripts/package-pages.mjs"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}
