@@ -86,8 +86,10 @@ function validate(path, content) {
 }
 
 export default async function handler(req, res) {
+  if (!process.env.SESSION_SECRET || process.env.SESSION_SECRET.length < 32) {
+    return res.status(503).json({ error: 'session_secret_not_configured' });
+  }
   try {
-    key();
     const origin = req.headers.origin;
     if (origin === adminOrigin) {
       res.setHeader('Access-Control-Allow-Origin', adminOrigin);
