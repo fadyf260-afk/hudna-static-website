@@ -42,6 +42,25 @@ test('OAuth login uses PKCE and protected state cookie', async () => {
   assert.match(res.headers['set-cookie'], /HttpOnly; Secure; SameSite=Lax/);
 });
 
+test('OAuth state works when the GitHub client secret is the session key source', async () => {
+  const previousSessionSecret = process.env.SESSION_SECRET;
+  const previousClientSecret = process.env.GITHUB_APP_CLIENT_SECRET;
+  delete process.env.SESSION_SECRET;
+  process.env.GITHUB_APP_CLIENT_SECRET = 'github-generated-client-secret-12345678901234567890';
+  try {
+    const login = response();
+    await handler({ method: 'GET', headers: {}, query: { action: 'login' } }, login);
+    assert.equal(login.statusCode, 302);
+    const state = new URL(login.location).searchParams.get('state');
+    const invalidCallback = response();
+    await handler({ method: 'GET', headers: { cookie: login.headers['set-cookie'] }, query: { code: 'fake', state: `${state}x` } }, invalidCallback);
+    assert.match(invalidCallback.location, /auth=error/);
+  } finally {
+    process.env.SESSION_SECRET = previousSessionSecret;
+    process.env.GITHUB_APP_CLIENT_SECRET = previousClientSecret;
+  }
+});
+
 test('callback rejects forged state', async () => {
   const res = response();
   await handler({ method: 'GET', headers: {}, query: { code: 'fake', state: 'wrong' } }, res);

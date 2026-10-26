@@ -1,4 +1,4 @@
-import { randomBytes, createHash, createCipheriv, createDecipheriv, timingSafeEqual } from 'node:crypto';
+import { randomBytes, createHash, createHmac, createCipheriv, createDecipheriv, timingSafeEqual } from 'node:crypto';
 import sanitizeHtml from 'sanitize-html';
 
 const paths = new Set(['blog/posts.json', 'site-content.json']);
@@ -16,8 +16,9 @@ const safeArticle = value => sanitizeHtml(value, {
 });
 
 function key() {
-  if (!process.env.SESSION_SECRET || process.env.SESSION_SECRET.length < 32) throw new Error('SESSION_SECRET must contain at least 32 characters');
-  return createHash('sha256').update(process.env.SESSION_SECRET).digest();
+  const secret = process.env.SESSION_SECRET || process.env.GITHUB_APP_CLIENT_SECRET;
+  if (!secret || secret.length < 32) throw new Error('A session signing secret of at least 32 characters is required');
+  return createHmac('sha256', secret).update('hudna-admin-session-aes-256-gcm-v1').digest();
 }
 
 function seal(data) {
@@ -86,7 +87,7 @@ function validate(path, content) {
 }
 
 export default async function handler(req, res) {
-  if (!process.env.SESSION_SECRET || process.env.SESSION_SECRET.length < 32) {
+  if (!((process.env.SESSION_SECRET || process.env.GITHUB_APP_CLIENT_SECRET)?.length >= 32)) {
     return res.status(503).json({ error: 'session_secret_not_configured' });
   }
   try {

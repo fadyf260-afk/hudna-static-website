@@ -14,12 +14,12 @@
    | --- | --- |
    | `API_ORIGIN` | `https://api.hudnaapp.com` |
    | `ADMIN_ORIGIN` | `https://hudnaapp.com` |
-   | `GITHUB_APP_CLIENT_ID` | Client ID للتطبيق |
-   | `GITHUB_APP_CLIENT_SECRET` | Client secret للتطبيق |
+   | `GITHUB_APP_CLIENT_ID` | مُعرّف التطبيق العام مضبوط حاليًا في `admin-api/vercel.json`؛ غيّره عند تغيير التطبيق فقط |
+   | `GITHUB_APP_CLIENT_SECRET` | Client secret للتطبيق؛ مطلوب ويُحفظ في Vercel فقط |
    | `GITHUB_ALLOWED_LOGIN` | `fadyf260-afk` |
    | `GITHUB_REPO_OWNER` | `fadyf260-afk` |
    | `GITHUB_REPO_NAME` | `hudna-static-website` |
-   | `SESSION_SECRET` | قيمة عشوائية طويلة (32 حرفًا على الأقل) |
+   | `SESSION_SECRET` | اختياري: قيمة عشوائية مستقلة (32 حرفًا على الأقل). عند غيابها يُشتق مفتاح الجلسة من Client secret المحفوظ في Vercel. تغيير أيٍّ من السرّين يُنهي الجلسات الحالية. |
 
 4. أضف `api.hudnaapp.com` إلى **Domains** في مشروع Vercel، ثم أضف سجل DNS من نوع CNAME للقيمة **التي يعرضها Vercel لهذا المشروع**. لا تغيّر سجلات `hudnaapp.com` الرئيسية؛ ستظل تشير إلى GitHub Pages. انتظر تفعيل HTTPS، ثم انشر مشروع Vercel مجددًا إذا أضفت المتغيرات بعد أول نشر.
 5. افتح `https://api.hudnaapp.com/api/admin?action=session` وتأكد أنه يعرض `authenticated: false`، ثم افتح `https://hudnaapp.com/admin/` وجرب الدخول، الحفظ، وتحقق من تشغيل **Actions → Publish Hudna site** وظهور التغيير على الموقع.

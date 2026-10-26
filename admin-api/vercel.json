@@ -1,6 +1,7 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "env": {
-    "NODE_OPTIONS": "--experimental-require-module"
+    "NODE_OPTIONS": "--experimental-require-module",
+    "GITHUB_APP_CLIENT_ID": "Iv23IiXZW2f5LFLqYMHu"
   }
 }
