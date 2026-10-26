@@ -58,7 +58,7 @@
     <h1>{{HERO_TITLE}}</h1>
     <p class="subtitle">{{HERO_SUBTITLE}}</p>
     <div class="hero-ctas">
-      <a class="btn btn-primary" href="{{PRIMARY_CTA_HREF}}">{{PRIMARY_CTA_TEXT}} {{PRIMARY_CTA_BADGE}}</a>
+      <a class="btn btn-primary" href="{{PRIMARY_CTA_HREF}}">{{PRIMARY_CTA_TEXT}}{{PRIMARY_CTA_BADGE}}</a>
       <a class="btn btn-ghost" href="/privacy-policy/">اعرف أكتر عن الخصوصية</a>
     </div>
   </div>
@@ -94,14 +94,14 @@
 
 {{FEATURED_POSTS}}
 
-<!-- SOON CTA -->
-<section class="section center" id="soon">
+<!-- APP CTA -->
+<section class="section center" id="app">
   <div class="wrap">
     <div class="card reveal" style="max-width:640px;margin-inline:auto;padding:40px 28px">
       <img src="/assets/hudna-app-icon.svg" alt="أيقونة تطبيق هُدنة" width="88" height="88" style="margin-bottom:18px" />
       <h2 style="margin-bottom:10px">{{SOON_TITLE}}</h2>
       <p class="lead" style="margin-bottom:24px">{{SOON_DESCRIPTION}}</p>
-      <a class="btn btn-ghost" href="/privacy-policy/">اقرأ سياسة الخصوصية</a>
+      <a class="btn btn-primary" href="{{PRIMARY_CTA_HREF}}">حمّل التطبيق من Google Play</a>
     </div>
   </div>
 </section>

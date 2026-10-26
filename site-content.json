@@ -3,9 +3,9 @@
   "seoDescription": "هُدنة تطبيق عربي يساعدك تاخد وقفة صغيرة قبل الأكل بسبب المشاعر — من غير لوم، ومن غير دايت أو سعرات.",
   "heroTitle": "جوع ولا شعور؟",
   "heroSubtitle": "هُدنة تساعدك تاخد دقيقة قبل قرار الأكل، وتفهم هل اللي محتاجه جسمك… ولا شعور محتاج يتسمع.",
-  "primaryCtaText": "قريبًا على Google Play",
-  "primaryCtaHref": "#soon",
-  "primaryCtaBadge": "Soon",
+  "primaryCtaText": "حمّل هُدنة من Google Play",
+  "primaryCtaHref": "https://play.google.com/store/apps/details?id=com.hudna.app",
+  "primaryCtaBadge": "",
   "howTitle": "خطوات صغيرة قبل القرار",
   "howDescription": "مش برنامج دايت، ولا متابعة سعرات. مجرد وقفة لطيفة تفهم فيها نفسك أكتر.",
   "features": [
@@ -30,6 +30,6 @@
       "description": "للمستخدمين المسجلين — نظرة هادئة على نمط أسبوعك، من غير أرقام محرجة."
     }
   ],
-  "soonTitle": "قريبًا على Google Play",
-  "soonDescription": "هُدنة في الطريق إليك. اعرف دلوقتي إزاي بنحافظ على خصوصيتك قبل ما تبدأ."
+  "soonTitle": "هُدنة متاح الآن على Google Play",
+  "soonDescription": "ابدأ وقفتك الهادية مع هُدنة. حمّل التطبيق على هاتف Android، وخد لحظة تفهم فيها شعورك قبل قرار الأكل."
 }

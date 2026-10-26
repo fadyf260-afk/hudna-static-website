@@ -26,7 +26,7 @@ export async function generateSite(site) {
     '{{HERO_SUBTITLE}}': esc(site.heroSubtitle),
     '{{PRIMARY_CTA_TEXT}}': esc(site.primaryCtaText),
     '{{PRIMARY_CTA_HREF}}': esc(site.primaryCtaHref),
-    '{{PRIMARY_CTA_BADGE}}': site.primaryCtaBadge ? `<span class="pill">${esc(site.primaryCtaBadge)}</span>` : '',
+    '{{PRIMARY_CTA_BADGE}}': site.primaryCtaBadge ? ` <span class="pill">${esc(site.primaryCtaBadge)}</span>` : '',
     '{{HOW_TITLE}}': esc(site.howTitle),
     '{{HOW_DESCRIPTION}}': esc(site.howDescription),
     '{{FEATURES}}': site.features.map((feature, index) => `<div class="card feature reveal"><span class="num">${'١٢٣٤٥'[index]}</span><h3>${esc(feature.title)}</h3><p>${esc(feature.description)}</p></div>`).join('\n      '),
