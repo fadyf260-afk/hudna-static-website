@@ -5,7 +5,15 @@ import { readFile } from 'node:fs/promises';
 process.env.SESSION_SECRET = 'test-secret-never-use-in-production-1234567890';
 process.env.GITHUB_APP_CLIENT_ID = 'test-client-id';
 process.env.GITHUB_APP_CLIENT_SECRET = 'test-client-secret';
-const { default: handler } = await import('../api/admin.js');
+const { default: handler, validate } = await import('../api/admin.js');
+
+test('tracking settings accept only public IDs, never executable snippets', () => {
+  const blank = { gtmId: '', ga4Id: '', metaPixelId: '', tiktokPixelId: '' };
+  assert.equal(validate('tracking-config.json', blank), true);
+  assert.equal(validate('tracking-config.json', { gtmId: 'GTM-ABC1234', ga4Id: 'G-ABC1234', metaPixelId: '123456789012', tiktokPixelId: 'C123456789ABC', }), true);
+  assert.equal(validate('tracking-config.json', { ...blank, ga4Id: '<script>alert(1)</script>' }), false);
+  assert.equal(validate('tracking-config.json', { ...blank, secret: 'value' }), false);
+});
 
 function response() {
   return {

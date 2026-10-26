@@ -15,6 +15,7 @@ on:
       - 'styles/**'
       - 'scripts/**'
       - 'site-content.json'
+      - 'tracking-config.json'
       - 'robots.txt'
       - 'CNAME'
       - 'package.json'

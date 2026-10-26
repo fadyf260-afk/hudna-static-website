@@ -1,7 +1,7 @@
 import { randomBytes, createHash, createHmac, createCipheriv, createDecipheriv, timingSafeEqual } from 'node:crypto';
 import sanitizeHtml from 'sanitize-html';
 
-const paths = new Set(['blog/posts.json', 'site-content.json']);
+const paths = new Set(['blog/posts.json', 'site-content.json', 'tracking-config.json']);
 const github = 'https://api.github.com';
 const base64url = bytes => Buffer.from(bytes).toString('base64url');
 const apiOrigin = process.env.API_ORIGIN || 'https://api.hudnaapp.com';
@@ -63,7 +63,18 @@ async function githubRequest(url, token, options = {}) {
   return response;
 }
 
-function validate(path, content) {
+export function validate(path, content) {
+  if (path === 'tracking-config.json') {
+    const patterns = {
+      gtmId: /^(?:|GTM-[A-Z0-9]{4,20})$/,
+      ga4Id: /^(?:|G-[A-Z0-9]{4,20})$/,
+      metaPixelId: /^(?:|[0-9]{5,30})$/,
+      tiktokPixelId: /^(?:|[A-Z0-9]{8,40})$/,
+    };
+    return content && typeof content === 'object' && !Array.isArray(content) &&
+      Object.keys(content).length === Object.keys(patterns).length &&
+      Object.entries(patterns).every(([field, pattern]) => typeof content[field] === 'string' && pattern.test(content[field]));
+  }
   if (path === 'blog/posts.json') {
     if (!Array.isArray(content) || content.length > 500) return false;
     const slugs = new Set();
@@ -166,7 +177,7 @@ export default async function handler(req, res) {
     const bytes = Buffer.from(`${JSON.stringify(body.content, null, 2)}\n`);
     const response = await githubRequest(url, current.token, {
       method: 'PUT', headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ message: path === 'blog/posts.json' ? 'content: update blog posts from dashboard' : 'content: update homepage from dashboard', content: bytes.toString('base64'), sha: body.sha, branch: 'main' }),
+      body: JSON.stringify({ message: path === 'blog/posts.json' ? 'content: update blog posts from dashboard' : path === 'tracking-config.json' ? 'content: update tracking IDs from dashboard' : 'content: update homepage from dashboard', content: bytes.toString('base64'), sha: body.sha, branch: 'main' }),
     });
     if (response.status === 409) return json(res, 409, { error: 'revision_conflict' });
     if (!response.ok) return json(res, response.status, { error: 'github_write_failed' });

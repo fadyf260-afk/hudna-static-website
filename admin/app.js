@@ -6,6 +6,7 @@ let posts = [];
 let editingSlug = null;
 let baseRevision = '';
 let siteRevision = '';
+let trackingRevision = '';
 const localMode = ['localhost', '127.0.0.1'].includes(location.hostname);
 const api = 'https://api.hudnaapp.com/api/admin';
 const apiUrl = (action, path = '') => `${api}?action=${action}${path ? `&path=${encodeURIComponent(path)}` : ''}`;
@@ -23,7 +24,7 @@ async function remoteContent(path, content, sha) {
 async function start() {
   if (localMode) {
     document.getElementById('workflow-note').textContent = 'الوضع المحلي: احفظ التعديلات، ثم ارفعها عبر Source Control في VS Code. المقالات المنشورة فقط تظهر للزوار.';
-    load(); loadSite(); return;
+    load(); loadSite(); loadTracking(); return;
   }
   document.getElementById('workflow-note').textContent = 'بعد الحفظ، يُنشأ commit في GitHub ويبدأ بناء الموقع ونشره تلقائيًا. قد يستغرق ظهور التغيير بضع دقائق.';
   document.getElementById('sidebar-note').textContent = 'لوحة متصلة بمستودع GitHub';
@@ -36,7 +37,7 @@ async function start() {
       document.getElementById('account').textContent = state.login;
       document.getElementById('logout').hidden = false;
       document.getElementById('login-gate').hidden = true;
-      load(); loadSite();
+      load(); loadSite(); loadTracking();
     } else {
       document.getElementById('login-gate').hidden = false;
       document.getElementById('login-error').textContent = new URLSearchParams(location.search).get('auth') === 'denied' ? 'هذا الحساب غير مخوّل بإدارة الموقع.' : '';
@@ -187,6 +188,32 @@ async function loadSite() {
   } catch { document.querySelector('#site-form button[type=submit]').disabled = true; }
 }
 
+async function loadTracking() {
+  try {
+    let config;
+    if (!localMode) {
+      const response = await fetch(apiUrl('content', 'tracking-config.json'), { credentials: 'include', cache: 'no-store' });
+      if (!response.ok) throw new Error('remote_read_failed');
+      const data = await response.json();
+      config = data.content;
+      trackingRevision = data.sha;
+    } else {
+      const [configResponse, revisionResponse] = await Promise.all([
+        fetch('/tracking-config.json', { cache: 'no-store' }),
+        fetch('/__tracking-revision', { cache: 'no-store' }),
+      ]);
+      if (!configResponse.ok || !revisionResponse.ok) throw new Error('local_server_required');
+      config = await configResponse.json();
+      trackingRevision = (await revisionResponse.json()).revision;
+    }
+    const trackingForm = document.getElementById('tracking-form');
+    for (const field of ['gtmId', 'ga4Id', 'metaPixelId', 'tiktokPixelId']) trackingForm.elements[field].value = config[field] || '';
+  } catch {
+    document.querySelector('#tracking-form button[type=submit]').disabled = true;
+    notify('تعذر تحميل إعدادات التتبع. حدّث الصفحة وحاول ثانية.');
+  }
+}
+
 function populateSite(site) {
     for (const [key, id] of Object.entries({ seoTitle: 'site-seo-title', seoDescription: 'site-seo-description', heroTitle: 'site-hero-title', heroSubtitle: 'site-hero-subtitle', primaryCtaText: 'site-primary-cta-text', primaryCtaHref: 'site-primary-cta-href', primaryCtaBadge: 'site-primary-cta-badge', howTitle: 'site-how-title', howDescription: 'site-how-description', soonTitle: 'site-soon-title', soonDescription: 'site-soon-description' })) {
       document.getElementById(id).value = site[key] || '';
@@ -303,6 +330,30 @@ document.getElementById('site-form').addEventListener('submit', async event => {
     siteRevision = (await response.json()).revision;
     notify('تم تحديث الصفحة الرئيسية وملف بياناتها داخل المشروع.');
   } catch (error) { notify(error.message === 'revision_conflict' ? 'تغيرت الصفحة خارج اللوحة. حدّث الصفحة قبل الحفظ.' : `تعذر حفظ الصفحة: ${error.message}`); }
+});
+document.getElementById('tracking-form').addEventListener('submit', async event => {
+  event.preventDefault();
+  const trackingForm = event.currentTarget;
+  if (!trackingForm.reportValidity()) return;
+  const config = Object.fromEntries([...new FormData(trackingForm)].map(([field, value]) => [field, value.trim().toUpperCase()]));
+  const button = trackingForm.querySelector('button[type=submit]');
+  button.disabled = true;
+  try {
+    if (!localMode) {
+      trackingRevision = await remoteContent('tracking-config.json', config, trackingRevision);
+      notify('حُفظت إعدادات التتبع في GitHub. سيبدأ النشر خلال دقائق.');
+    } else {
+      const response = await fetch('/__save-tracking', {
+        method: 'POST', headers: { 'Content-Type': 'application/json', 'X-Content-Revision': trackingRevision },
+        body: JSON.stringify(config),
+      });
+      if (!response.ok) throw new Error(await response.text());
+      trackingRevision = (await response.json()).revision;
+      notify('حُفظت إعدادات التتبع محليًا. ارفعها إلى GitHub لنشرها.');
+    }
+  } catch (error) {
+    notify(error.message === 'revision_conflict' ? 'تغيرت الإعدادات خارج اللوحة. حدّث الصفحة قبل الحفظ.' : `تعذر حفظ الإعدادات: ${error.message}`);
+  } finally { button.disabled = false; }
 });
 document.getElementById('login-link').href = apiUrl('login');
 document.getElementById('logout').addEventListener('click', async () => {

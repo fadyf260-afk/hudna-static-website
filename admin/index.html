@@ -16,7 +16,7 @@
     <aside class="sidebar">
       <div class="brand"><img src="/assets/hudna-icon.svg" alt="" /><span>هُدنة</span></div>
       <div class="side-label">مساحة العمل</div>
-      <nav class="side-links"><a class="active" href="#dashboard" aria-label="نظرة عامة">◫ <span class="label">نظرة عامة</span></a><a href="#articles" aria-label="المقالات">▤ <span class="label">المقالات</span></a><a href="#site" aria-label="الصفحة الرئيسية">⌂ <span class="label">الصفحة الرئيسية</span></a><a href="#seo" aria-label="تحسين محركات البحث">⌕ <span class="label">تحسين SEO</span></a><a href="/blog/" target="_blank" rel="noopener" aria-label="عرض المدونة">↗ <span class="label">عرض المدونة</span></a></nav>
+      <nav class="side-links"><a class="active" href="#dashboard" aria-label="نظرة عامة">◫ <span class="label">نظرة عامة</span></a><a href="#articles" aria-label="المقالات">▤ <span class="label">المقالات</span></a><a href="#site" aria-label="الصفحة الرئيسية">⌂ <span class="label">الصفحة الرئيسية</span></a><a href="#seo" aria-label="تحسين محركات البحث">⌕ <span class="label">تحسين SEO</span></a><a href="#tracking" aria-label="التتبع والتحليلات">◉ <span class="label">التتبع والتحليلات</span></a><a href="/blog/" target="_blank" rel="noopener" aria-label="عرض المدونة">↗ <span class="label">عرض المدونة</span></a></nav>
       <div class="sidebar-bottom" id="sidebar-note">لوحة إدارة المحتوى</div>
     </aside>
     <main class="main">
@@ -43,6 +43,15 @@
           </div><button class="btn primary" type="submit">حفظ الصفحة الرئيسية</button></form>
         </section>
         <section class="panel" id="seo"><div class="panel-head"><h3>تحسين ظهور المقالات في البحث</h3><a class="btn ghost" href="/sitemap.xml" target="_blank" rel="noopener">فتح Sitemap ↗</a></div><div id="seo-results" class="notice">جارٍ فحص المقالات…</div><div class="quick"><a class="btn secondary" href="https://search.google.com/search-console" target="_blank" rel="noopener">Google Search Console ↗</a><a class="btn secondary" href="https://search.google.com/test/rich-results" target="_blank" rel="noopener">اختبار النتائج المنسقة ↗</a><a class="btn secondary" href="https://pagespeed.web.dev/" target="_blank" rel="noopener">PageSpeed Insights ↗</a></div><p class="hint">بعد النشر، أرسل <code>https://hudnaapp.com/sitemap.xml</code> إلى Search Console. كل مقال منشور له عنوان ووصف ورابط canonical وبيانات BlogPosting المنظمة. الفحص داخل اللوحة يعطي إشارات تحريرية ولا يضمن ترتيبًا في البحث.</p></section>
+        <section class="panel" id="tracking"><div class="panel-head"><h3>التتبع والتحليلات</h3></div>
+          <p class="hint">أدخل المعرّفات فقط، ولا تلصق كود JavaScript أو مفاتيح سرية. الحقول الفارغة لا تشغّل أي أداة. تُحفظ المعرّفات في المستودع العام.</p>
+          <form id="tracking-form"><div class="form-grid">
+            <div class="field"><label for="tracking-gtm">Google Tag Manager</label><input id="tracking-gtm" name="gtmId" dir="ltr" placeholder="GTM-XXXXXXX" pattern="GTM-[A-Z0-9]{4,20}" /><small>يعمل على الصفحة الرئيسية بعد موافقة الزائر على التحليلات والتسويق معًا. راجع موافقة كل Tag داخل GTM.</small></div>
+            <div class="field"><label for="tracking-ga4">Google Analytics 4</label><input id="tracking-ga4" name="ga4Id" dir="ltr" placeholder="G-XXXXXXXXXX" pattern="G-[A-Z0-9]{4,20}" /><small>يعمل بعد موافقة الزائر على التحليلات.</small></div>
+            <div class="field"><label for="tracking-meta">Meta Pixel</label><input id="tracking-meta" name="metaPixelId" dir="ltr" placeholder="123456789012345" pattern="[0-9]{5,30}" /><small>يعمل بعد موافقة الزائر على التسويق، وعلى الصفحة الرئيسية فقط.</small></div>
+            <div class="field"><label for="tracking-tiktok">TikTok Pixel</label><input id="tracking-tiktok" name="tiktokPixelId" dir="ltr" placeholder="CXXXXXXXXXXXXXXXX" pattern="[A-Z0-9]{8,40}" /><small>يعمل بعد موافقة الزائر على التسويق، وعلى الصفحة الرئيسية فقط.</small></div>
+          </div><p class="notice">إذا أضفت GA4 أو Pixel داخل GTM أيضًا، احذف المعرّف المكرر هنا لتجنب تكرار قياس الزيارات. لا ترسل محتوى المقالات أو بيانات التطبيق الصحية إلى أدوات الإعلانات.</p><button class="btn primary" type="submit">حفظ إعدادات التتبع</button></form>
+        </section>
         <p class="hint">المقالات المسودة لا تظهر للزوار، لكنها محفوظة في مستودع GitHub العام. لا تكتب أسرارًا أو بيانات خاصة في المحتوى.</p>
       </div>
     </main>
