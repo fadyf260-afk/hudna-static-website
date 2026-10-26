@@ -35,7 +35,7 @@
   <header class="site-header"><div class="wrap nav">
     <a class="brand-lockup" href="/" aria-label="هُدنة — الصفحة الرئيسية"><span class="mark"><img src="/assets/hudna-icon.svg" alt="" width="34" height="44" /></span><span class="word">هُدنة</span></a>
     <button class="nav-toggle" aria-label="القائمة" aria-expanded="false" onclick="const n=document.getElementById('menu');const o=n.classList.toggle('open');this.setAttribute('aria-expanded',o)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button>
-    <nav class="nav-links" id="menu"><a href="/">الرئيسية</a><a href="/blog/" class="active" aria-current="page">المدونة</a><a href="/privacy-policy/">الخصوصية</a><a href="/terms/">الشروط</a><a href="/delete-account/">حذف الحساب</a><a href="/contact/">تواصل معنا</a></nav>
+    <nav class="nav-links" id="menu"><a href="/">الرئيسية</a><a href="/blog/" class="active" aria-current="page">المدونة</a><a href="/about/">عن هُدنة</a><a href="/privacy-policy/">الخصوصية</a><a href="/terms/">الشروط</a><a href="/delete-account/">حذف الحساب</a><a href="/contact/">تواصل معنا</a></nav>
   </div></header>
   <main class="wrap">
     <header class="blog-hero"><span class="section-tag">مساحة معرفة بلا لوم</span><h1>مدونة هُدنة</h1><p>كلام بسيط وموثوق يساعدك تفهم إشارات جسمك ومشاعرك، وتبني علاقة أهدأ مع الأكل خطوة بخطوة.</p></header>

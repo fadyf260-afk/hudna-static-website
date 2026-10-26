@@ -16,7 +16,7 @@
 <meta property="og:locale" content="ar_AR" />
 <meta name="twitter:card" content="summary_large_image" />
 <meta name="theme-color" content="#2E7D72" />
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"Organization","name":"هُدنة","url":"https://hudnaapp.com/","logo":"https://hudnaapp.com/assets/hudna-app-icon-512.png"}</script>
+<script type="application/ld+json">{{HOME_STRUCTURED_DATA}}</script>
 
 <link rel="icon" href="/assets/favicon.ico" sizes="any" />
 <link rel="icon" type="image/png" href="/assets/favicon-32.png" sizes="32x32" />
@@ -41,6 +41,7 @@
     </button>
     <nav class="nav-links" id="menu">
       <a href="/" class="active">الرئيسية</a>
+      <a href="/about/">عن هُدنة</a>
       <a href="/privacy-policy/">الخصوصية</a>
       <a href="/terms/">الشروط</a>
       <a href="/blog/">المدونة</a>
@@ -50,6 +51,7 @@
   </div>
 </header>
 
+<main>
 <!-- HERO -->
 <section class="hero">
   <img class="leaf-bg" src="/assets/hudna-leaf.svg" alt="" aria-hidden="true" />
@@ -92,6 +94,18 @@
   </div>
 </section>
 
+<section class="section" aria-labelledby="about-emotional-eating">
+  <div class="wrap">
+    <span class="section-tag">فهم أبسط، من غير أحكام</span>
+    <h2 id="about-emotional-eating">يعني إيه أكل عاطفي؟</h2>
+    <p class="lead">أحيانًا نلجأ للأكل استجابةً للتوتر أو الملل أو الحزن، وأحيانًا لأننا جائعون فعلًا. ملاحظة الفرق بهدوء تساعدك تفهم احتياجك، من غير ما تحكم على نفسك أو تمنع طعامًا معينًا. <a href="/blog/emotional-hunger-or-physical-hunger/">اقرأ عن الفرق بين الجوع الجسدي والجوع العاطفي</a>.</p>
+    <div class="grid cols-2" style="margin-top:22px">
+      <div class="card"><h3>هل هُدنة نظام غذائي؟</h3><p>لا. التطبيق لا يحسب السعرات ولا يطلب منك وزن جسمك. هدفه مساعدتك تأخذ وقفة قصيرة وتفهم ما تشعر به قبل قرار الأكل.</p></div>
+      <div class="card"><h3>هل يمكن استخدامه من غير حساب؟</h3><p>نعم، يمكنك البدء كضيف. إنشاء حساب يتيح حفظ سجلك والمفضّلة داخل التطبيق. هُدنة أداة مساعدة ذاتية، وليس بديلًا عن مختص.</p></div>
+    </div>
+  </div>
+</section>
+
 {{FEATURED_POSTS}}
 
 <!-- APP CTA -->
@@ -118,6 +132,7 @@
     </div>
   </div>
 </section>
+</main>
 
 <!-- FOOTER -->
 <footer class="site-footer">
@@ -128,6 +143,7 @@
     </div>
     <nav class="footer-links">
       <a href="/blog/">المدونة</a>
+      <a href="/about/">عن هُدنة</a>
       <a href="/privacy-policy/">Privacy Policy</a>
       <a href="/terms/">Terms</a>
       <a href="/delete-account/">Delete Account</a>

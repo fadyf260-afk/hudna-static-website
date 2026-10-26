@@ -5,6 +5,7 @@ on:
     branches: [main]
     paths:
       - 'admin/**'
+      - 'about/**'
       - 'assets/**'
       - 'blog/**'
       - 'contact/**'
@@ -44,6 +45,7 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npm run build
+      - run: npm run check:seo
       - run: npm run package:pages
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3

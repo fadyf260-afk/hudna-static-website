@@ -1,10 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url><loc>https://hudnaapp.com/</loc></url>
+  <url><loc>https://hudnaapp.com/about/</loc></url>
   <url><loc>https://hudnaapp.com/privacy-policy/</loc></url>
   <url><loc>https://hudnaapp.com/terms/</loc></url>
   <url><loc>https://hudnaapp.com/delete-account/</loc></url>
   <url><loc>https://hudnaapp.com/contact/</loc></url>
   <url><loc>https://hudnaapp.com/blog/</loc></url>
+  <url><loc>https://hudnaapp.com/blog/stress-eating-gentle-pause/</loc><lastmod>2026-10-26</lastmod></url>
   <url><loc>https://hudnaapp.com/blog/emotional-hunger-or-physical-hunger/</loc><lastmod>2026-10-25</lastmod></url>
 </urlset>

@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "node scripts/dev-server.mjs",
     "build": "node scripts/build.mjs",
+    "check:seo": "node scripts/check-seo.mjs",
     "package:pages": "node scripts/package-pages.mjs"
   },
   "engines": {

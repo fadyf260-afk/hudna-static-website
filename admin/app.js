@@ -74,9 +74,10 @@ function safeContent(html) {
 }
 
 function seoScore(post) {
-  return Number(Boolean(post.title && post.title.length <= 60)) +
-    Number(Boolean(post.description && post.description.length >= 70 && post.description.length <= 160)) +
-    Number(Boolean(post.content?.includes('<h2'))) + Number(Boolean(post.slug));
+  return Number(Boolean(post.title?.trim())) + Number(Boolean(post.description?.trim())) +
+    Number(Boolean(post.content?.includes('<h2'))) +
+    Number(Boolean(post.content?.includes('href="/'))) +
+    Number(Boolean(post.content?.includes('href="https://')));
 }
 
 function render() {
@@ -86,7 +87,7 @@ function render() {
   rows.innerHTML = visible.length ? visible.map(post => `<tr>
     <td><strong>${esc(post.title)}</strong><small>/blog/${esc(post.slug)}/</small></td>
     <td>${esc(post.category)}</td><td><span class="status ${post.status}">${post.status === 'published' ? 'منشور' : 'مسودة'}</span></td>
-    <td>${esc(post.date)}</td><td>${seoScore(post)}/4</td>
+    <td>${esc(post.date)}</td><td>${seoScore(post)}/5</td>
     <td><div class="row-actions"><button data-action="edit" data-slug="${esc(post.slug)}">تحرير</button>${post.status === 'published' ? `<button data-action="view" data-slug="${esc(post.slug)}">عرض</button>` : ''}<button class="delete" data-action="delete" data-slug="${esc(post.slug)}">حذف</button></div></td>
   </tr>`).join('') : '<tr><td class="empty" colspan="6">لا توجد مقالات هنا بعد. أنشئ أول مقال من الزر بالأعلى.</td></tr>';
   document.getElementById('stat-total').textContent = posts.length;
@@ -99,13 +100,17 @@ function render() {
 
 function renderSeo() {
   const issues = [];
-  for (const post of posts.filter(item => item.status === 'published')) {
-    if (post.title.length > 60) issues.push(`عنوان «${post.title}» طويل وقد يُختصر في نتائج البحث.`);
-    if (post.description.length < 70 || post.description.length > 160) issues.push(`وصف «${post.title}» يفضّل أن يكون بين 70 و160 حرفًا.`);
+  const published = posts.filter(item => item.status === 'published');
+  for (const post of published) {
+    if (published.some(other => other.slug !== post.slug && other.title.trim() === post.title.trim())) issues.push(`عنوان «${post.title}» مكرر. استخدم عنوانًا يوضح موضوع المقال وحده.`);
+    if (published.some(other => other.slug !== post.slug && other.description.trim() === post.description.trim())) issues.push(`وصف «${post.title}» مكرر. لخّص فائدة هذه الصفحة تحديدًا.`);
+    if (post.title.length > 80) issues.push(`عنوان «${post.title}» طويل؛ راجع وضوحه على الهاتف ونتائج البحث.`);
+    if (post.description.length < 55) issues.push(`وصف «${post.title}» قصير؛ وضّح للقارئ ما الذي سيجده في المقال.`);
     if (!post.content?.includes('<h2')) issues.push(`أضف عناوين فرعية H2 إلى «${post.title}».`);
-    if (!post.content?.includes('href="/')) issues.push(`أضف رابطًا داخليًا مناسبًا إلى «${post.title}» إن كان يخدم القارئ.`);
+    if (!post.content?.includes('href="/')) issues.push(`أضف رابطًا داخليًا ذا صلة إلى «${post.title}» لمساعدة القارئ على الاستكشاف.`);
+    if (!post.content?.includes('href="https://')) issues.push(`أضف مصادر موثوقة تدعم المعلومات في «${post.title}».`);
   }
-  document.getElementById('seo-results').innerHTML = issues.length ? `<strong>${issues.length} فرصة تحسين:</strong><ul>${issues.map(issue => `<li>${esc(issue)}</li>`).join('')}</ul>` : '<strong>أساسيات SEO للمقالات المنشورة مكتملة.</strong> راجع المحتوى والمصادر دوريًا.';
+  document.getElementById('seo-results').innerHTML = issues.length ? `<strong>${issues.length} فرصة مراجعة تحريرية:</strong><ul>${issues.map(issue => `<li>${esc(issue)}</li>`).join('')}</ul>` : '<strong>قائمة المراجعة التحريرية مكتملة للمقالات المنشورة.</strong> راجع دقة المحتوى والمصادر دوريًا، وتابع الفهرسة الفعلية في Search Console.';
 }
 
 function preview() {
@@ -124,6 +129,9 @@ function preview() {
 function openEditor(post) {
   form.reset();
   editingSlug = post?.slug || null;
+  const fixedSlug = post?.status === 'published';
+  document.getElementById('slug').readOnly = fixedSlug;
+  document.getElementById('make-slug').disabled = fixedSlug;
   document.getElementById('editor-title').textContent = post ? 'تحرير المقال' : 'مقال جديد';
   document.getElementById('delete-post').hidden = !post;
   for (const id of ['title', 'slug', 'description', 'category', 'date', 'cover', 'content']) {
@@ -193,13 +201,16 @@ async function save(status) {
   if (!/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(slug)) { notify('الرابط الدائم يحتاج حروفًا إنجليزية صغيرة وأرقامًا وشرطات.'); return; }
   if (posts.some(post => post.slug === slug && post.slug !== editingSlug)) { notify('الرابط مستخدم بالفعل. اختر رابطًا آخر.'); return; }
   const original = posts.find(post => post.slug === editingSlug);
+  if (original?.status === 'published' && slug !== original.slug) { notify('لا يمكن تغيير رابط مقال منشور حتى لا تنكسر روابطه في نتائج البحث.'); return; }
   const content = safeContent(data.content);
+  const changed = !original || ['title', 'description', 'category', 'date', 'cover', 'content'].some(key => (key === 'content' ? content : data[key]?.trim()) !== original[key]) ||
+    status !== original.status || data.tags.split(/[,،]/).map(tag => tag.trim()).filter(Boolean).join('|') !== (original.tags || []).join('|');
   const post = {
     slug, title: data.title.trim(), description: data.description.trim(), category: data.category.trim(),
     tags: data.tags.split(/[,،]/).map(tag => tag.trim()).filter(Boolean), date: data.date, status,
     cover: data.cover.trim(), content,
     readingTime: Math.max(1, Math.ceil(content.replace(/<[^>]*>/g, ' ').trim().split(/\s+/).length / 180)),
-    updated: new Date().toLocaleDateString('en-CA'), created: original?.created || new Date().toLocaleDateString('en-CA'),
+    updated: changed ? new Date().toLocaleDateString('en-CA') : (original.updated || original.date), created: original?.created || new Date().toLocaleDateString('en-CA'),
   };
   const next = [...posts.filter(item => item.slug !== editingSlug), post];
   try {
