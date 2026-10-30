@@ -251,6 +251,10 @@ img, svg { max-width: 100%; }
 .doc-body strong { color: #143f3b; }
 .doc-body a { font-weight: 700; text-decoration: underline; text-underline-offset: 3px; }
 
+.article-cta { margin-top: 32px; padding: 24px; border: 1px solid var(--line); border-radius: 18px; background: #edf7f3; }
+.article-cta h2 { margin: 0 0 8px; color: var(--deep); font-size: 23px; }
+.article-cta p { margin: 0 0 18px; color: var(--text-soft); }
+
 .todo {
   display: inline-block; background: #fff4d6; color: #8a6d10;
   border: 1px dashed rgba(200,168,75,.5); border-radius: 10px;

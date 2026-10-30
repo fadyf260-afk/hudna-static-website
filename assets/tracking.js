@@ -26,6 +26,11 @@
 
   window.dataLayer = window.dataLayer || [];
   const gtag = (...args) => window.dataLayer.push(args);
+  document.addEventListener('click', event => {
+    const link = event.target.closest?.('a[href^="https://play.google.com/store/apps/details?id=com.hudna.app"]');
+    if (!link || !choice?.analytics || !config.ga4Id) return;
+    gtag('event', 'play_store_click', { destination: 'google_play', page_path: location.pathname });
+  });
   gtag('consent', 'default', { analytics_storage: 'denied', ad_storage: 'denied', ad_user_data: 'denied', ad_personalization: 'denied' });
   const updateGoogle = value => gtag('consent', 'update', {
     analytics_storage: value.analytics ? 'granted' : 'denied',

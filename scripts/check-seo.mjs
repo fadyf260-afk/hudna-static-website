@@ -4,6 +4,7 @@ import { join, resolve } from 'node:path';
 const root = resolve(import.meta.dirname, '..');
 const domain = 'https://hudnaapp.com';
 const errors = [];
+const titles = new Map();
 const text = path => readFile(join(root, path), 'utf8');
 const match = (html, pattern) => html.match(pattern)?.[1]?.trim() || '';
 const exists = async path => { try { return (await stat(join(root, path))).isFile(); } catch { return false; } };
@@ -20,9 +21,12 @@ for (const url of urls) {
   const description = match(html, /<meta\s+name="description"\s+content="([^"]+)"/i);
   const canonical = match(html, /<link\s+rel="canonical"\s+href="([^"]+)"/i);
   if (!title) errors.push(`${url}: missing title`);
+  else if (titles.has(title)) errors.push(`${url}: duplicate title with ${titles.get(title)}`);
+  else titles.set(title, url);
   if (!description) errors.push(`${url}: missing meta description`);
   if (canonical !== url) errors.push(`${url}: canonical mismatch (${canonical})`);
   if (!/<h1(?:\s|>)/i.test(html)) errors.push(`${url}: missing H1`);
+  if (!html.includes('class="nav-toggle"') || !html.includes('class="nav-links" id="menu"')) errors.push(`${url}: mobile navigation cannot open`);
   const language = pathname.startsWith('/en/') ? 'en' : 'ar';
   if (!new RegExp(`<html[^>]+lang="${language}"`, 'i').test(html)) errors.push(`${url}: incorrect language declaration`);
   const counterpart = language === 'en' ? `${domain}${pathname.slice(3)}` : `${domain}/en${pathname}`;
@@ -32,7 +36,11 @@ for (const url of urls) {
     for (const [lang, href] of [['ar',ar],['en',en],['x-default',ar]]) {
       if (!html.includes(`<link rel="alternate" hreflang="${lang}" href="${href}">`)) errors.push(`${url}: missing ${lang} hreflang`);
     }
+  } else {
+    if (language === 'en') errors.push(`${url}: missing Arabic counterpart`);
+    if (/<link\s+rel="alternate"\s+hreflang="(?:ar|en)"/i.test(html)) errors.push(`${url}: hreflang points to a missing translation`);
   }
+  if (/^\/(?:en\/)?blog\/[^/]+\/$/.test(pathname) && !html.includes('https://play.google.com/store/apps/details?id=com.hudna.app')) errors.push(`${url}: article has no app link`);
   if (/<meta\s+name="robots"\s+content="[^"]*noindex/i.test(html)) errors.push(`${url}: sitemap includes noindex page`);
   for (const script of html.matchAll(/<script\s+type="application\/ld\+json"[^>]*>([\s\S]*?)<\/script>/gi)) {
     try { JSON.parse(script[1]); } catch { errors.push(`${url}: invalid JSON-LD`); }

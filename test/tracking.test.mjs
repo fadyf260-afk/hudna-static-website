@@ -10,6 +10,7 @@ async function run(config, pathname = '/') {
   const elements = [];
   const fields = { '#hudna-analytics': { checked: false }, '#hudna-marketing': { checked: false } };
   const document = {
+    addEventListener(event, listener) { this[event] = listener; },
     head: { append(element) { if (element.src) scripts.push(element.src); } },
     body: { append(element) { elements.push(element); } },
     createElement(tag) {
@@ -29,7 +30,8 @@ async function run(config, pathname = '/') {
   await vm.runInNewContext(source, context);
   const panel = elements.find(element => element.tag === 'section');
   const choose = choice => panel.click({ target: { closest: () => ({ dataset: { choice } }) } });
-  return { scripts, choose, fields };
+  const clickPlay = () => document.click({ target: { closest: () => ({ href: 'https://play.google.com/store/apps/details?id=com.hudna.app' }) } });
+  return { scripts, choose, fields, clickPlay, dataLayer: context.window.dataLayer };
 }
 
 test('configured tags wait for consent; rejection sends nothing', async () => {
@@ -49,4 +51,17 @@ test('marketing tags do not run on article pages', async () => {
   const state = await run({ gtmId: 'GTM-ABC1234', ga4Id: '', metaPixelId: '12345678901', tiktokPixelId: 'C123456789ABC' }, '/blog/example/');
   state.choose('all');
   assert.deepEqual(state.scripts, []);
+});
+
+test('Google Play clicks are measured only after analytics consent', async () => {
+  const state = await run({ gtmId: '', ga4Id: 'G-ABC1234', metaPixelId: '', tiktokPixelId: '' }, '/blog/example/');
+  state.clickPlay();
+  assert.equal(state.dataLayer.some(item => item[0] === 'event'), false);
+  state.choose('reject');
+  state.clickPlay();
+  assert.equal(state.dataLayer.some(item => item[0] === 'event'), false);
+  state.fields['#hudna-analytics'].checked = true;
+  state.choose('save');
+  state.clickPlay();
+  assert.equal(state.dataLayer.filter(item => item[0] === 'event' && item[1] === 'play_store_click').length, 1);
 });

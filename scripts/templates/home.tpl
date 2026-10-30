@@ -144,10 +144,10 @@
     <nav class="footer-links">
       <a href="/blog/">المدونة</a>
       <a href="/about/">عن هُدنة</a>
-      <a href="/privacy-policy/">Privacy Policy</a>
-      <a href="/terms/">Terms</a>
-      <a href="/delete-account/">Delete Account</a>
-      <a href="/contact/">Contact</a>
+      <a href="/privacy-policy/">الخصوصية</a>
+      <a href="/terms/">الشروط</a>
+      <a href="/delete-account/">حذف الحساب</a>
+      <a href="/contact/">تواصل معنا</a>
     </nav>
     <div class="copyright">
       <img class="leaf" src="/assets/hudna-footer-leaf.svg" alt="" aria-hidden="true" />

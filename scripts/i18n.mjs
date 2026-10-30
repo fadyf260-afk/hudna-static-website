@@ -12,6 +12,9 @@ const pair = path => {
   return `<link rel="alternate" hreflang="ar" href="${ar}"><link rel="alternate" hreflang="en" href="${en}"><link rel="alternate" hreflang="x-default" href="${ar}">`;
 };
 const switcher = (path, language) => `<a class="language-switch" href="${language === 'en' ? `/${path}` : `/en/${path}`}" lang="${language === 'en' ? 'ar' : 'en'}" hreflang="${language === 'en' ? 'ar' : 'en'}" aria-label="${language === 'en' ? 'Read this page in Arabic' : 'Read this page in English'}">${language === 'en' ? 'العربية' : 'English'}</a>`;
+export const articleCta = language => language === 'en'
+  ? '<aside class="article-cta" aria-label="Hudna app"><h2>Take the next step with Hudna</h2><p>Explore short pauses and reflections in the Android app. The app is currently available in Arabic.</p><a class="btn btn-primary" href="https://play.google.com/store/apps/details?id=com.hudna.app">Get Hudna on Google Play</a></aside>'
+  : '<aside class="article-cta" aria-label="تطبيق هُدنة"><h2>جرّب وقفة هُدنة في التطبيق</h2><p>لو حابب تلاحظ احتياجك قبل قرار الأكل، التطبيق العربي يقدّم وقفات وتمارين قصيرة من غير لوم.</p><a class="btn btn-primary" href="https://play.google.com/store/apps/details?id=com.hudna.app">حمّل هُدنة من Google Play</a></aside>';
 
 export function englishPage(path, title, description, body, options = {}) {
   const url = `${base}/en/${path}`;
@@ -29,6 +32,12 @@ export async function writeEnglish(path, html) {
 export async function decorateArabic(path, hasEnglish = true) {
   const filename = local(`${path}index.html`);
   let html = await readFile(filename, 'utf8');
+  if (!html.includes('class="nav-toggle"')) {
+    const nav = '<nav class="nav-links"';
+    if (!html.includes(nav)) throw new Error(`missing_navigation:${path}`);
+    const toggle = '<button class="nav-toggle" aria-label="القائمة" aria-expanded="false" onclick="const n=document.getElementById(\'menu\');const o=n.classList.toggle(\'open\');this.setAttribute(\'aria-expanded\',o)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button>';
+    html = html.replace(nav, `${toggle}<nav class="nav-links" id="menu"`);
+  }
   html = html.replace(/<link rel="alternate" hreflang="(?:ar|en|x-default)" href="[^"]+">/g, '');
   if (hasEnglish) html = html.replace('</head>', `${pair(path)}</head>`);
   html = html.replace(/<a class="language-switch"[^>]*>.*?<\/a>/g, '');
@@ -57,7 +66,7 @@ export async function generateEnglishBlog(posts) {
     const path = `blog/${post.slug}/`;
     const content = post.en.content.replaceAll('href="/blog/', 'href="/en/blog/');
     const body = `<article class="card article"><p><a href="/en/blog/">← All articles</a></p><p class="article-meta">Hudna · ${esc(post.en.category)} · <time datetime="${esc(post.date)}">${esc(post.date)}</time> · ${esc(post.readingTime || 4)} min read</p><h1>${esc(post.en.title)}</h1><p class="lead">${esc(post.en.description)}</p>${post.cover?`<img class="article-cover" src="${esc(post.cover)}" alt="" loading="lazy">`:''}<div class="article-body">${content}</div><p class="hint">For general education only. This article is not a diagnosis or a substitute for professional advice.</p></article>`;
-    await writeEnglish(path,englishPage(path,`${post.en.title} | Hudna Blog`,post.en.description,body,{article:{...post.en,date:post.date,updated:post.updated}}));
+    await writeEnglish(path,englishPage(path,`${post.en.title} | Hudna Blog`,post.en.description,body,{article:{...post.en,date:post.date,updated:post.updated}}).replace('</article>',`${articleCta('en')}</article>`));
   }
   const active = new Set(published.map(p=>p.slug));
   for (const entry of await readdir(local('en/blog'),{withFileTypes:true})) if (entry.isDirectory() && !active.has(entry.name)) await rm(local(`en/blog/${entry.name}`),{recursive:true,force:true});

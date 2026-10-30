@@ -3,7 +3,7 @@ import { readFile, writeFile, mkdir, rm, stat, readdir } from 'node:fs/promises'
 import { createServer } from 'node:http';
 import { extname, join, normalize, resolve, sep } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { generateEnglishHome, generateEnglishBlog, generateEnglishStatic, decorateArabic, completeEnglish } from './i18n.mjs';
+import { generateEnglishHome, generateEnglishBlog, generateEnglishStatic, decorateArabic, completeEnglish, articleCta } from './i18n.mjs';
 
 const root = resolve(import.meta.dirname, '..');
 const port = Number(process.env.PORT || 4173);
@@ -70,7 +70,7 @@ function page(post) {
 }
 export async function generate(posts) {
   const published = posts.filter(post => post.status === 'published').sort((a,b) => b.date.localeCompare(a.date));
-  for (const post of published) { const directory = join(root,'blog',post.slug); await mkdir(directory,{recursive:true}); await writeFile(join(directory,'index.html'),page(post),'utf8'); }
+  for (const post of published) { const directory = join(root,'blog',post.slug); await mkdir(directory,{recursive:true}); await writeFile(join(directory,'index.html'),page(post).replace('</article>',`${articleCta('ar')}</article>`),'utf8'); }
   const active = new Set(published.map(post => post.slug));
   for (const entry of await readdir(join(root,'blog'),{withFileTypes:true})) { if (entry.isDirectory() && !active.has(entry.name)) await rm(join(root,'blog',entry.name),{recursive:true,force:true}); }
   const template = await readFile(join(root,'scripts','templates','blog-index.tpl'),'utf8');
@@ -84,7 +84,11 @@ export async function generate(posts) {
   for (const path of ['about/','privacy-policy/','terms/','delete-account/','contact/','blog/']) await decorateArabic(path);
   for (const post of published) await decorateArabic(`blog/${post.slug}/`, completeEnglish(post));
   const urls = ['','about/','privacy-policy/','terms/','delete-account/','contact/','blog/',...published.map(post=>`blog/${post.slug}/`),'en/','en/about/','en/privacy-policy/','en/terms/','en/delete-account/','en/contact/','en/blog/',...englishPosts.map(post=>`en/blog/${post.slug}/`)];
-  await writeFile(join(root,'sitemap.xml'),`<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls.map(path=>`  <url><loc>https://hudnaapp.com/${path}</loc>${path.startsWith('blog/') && path !== 'blog/' ? `<lastmod>${esc(posts.find(p=>`blog/${p.slug}/`===path)?.updated || posts.find(p=>`blog/${p.slug}/`===path)?.date)}</lastmod>`:''}</url>`).join('\n')}\n</urlset>\n`,'utf8');
+  const articleForPath = path => {
+    const slug = path.match(/^(?:en\/)?blog\/([^/]+)\/$/)?.[1];
+    return slug ? published.find(post => post.slug === slug) : undefined;
+  };
+  await writeFile(join(root,'sitemap.xml'),`<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls.map(path=>{ const post = articleForPath(path); return `  <url><loc>https://hudnaapp.com/${path}</loc>${post ? `<lastmod>${esc(post.updated || post.date)}</lastmod>` : ''}</url>`; }).join('\n')}\n</urlset>\n`,'utf8');
   const now = published.length ? new Date(`${published[0].updated || published[0].date}T12:00:00Z`).toUTCString() : new Date('2000-01-01T12:00:00Z').toUTCString();
   await writeFile(join(root,'feed.xml'),`<?xml version="1.0" encoding="UTF-8"?>\n<rss version="2.0"><channel><title>مدونة هُدنة</title><link>https://hudnaapp.com/blog/</link><description>مقالات هادئة عن الأكل العاطفي والوعي بالمشاعر.</description><language>ar</language><lastBuildDate>${now}</lastBuildDate>${published.map(post=>`<item><title>${esc(post.title)}</title><link>https://hudnaapp.com/blog/${post.slug}/</link><guid>https://hudnaapp.com/blog/${post.slug}/</guid><pubDate>${new Date(`${post.date}T12:00:00Z`).toUTCString()}</pubDate><description>${esc(post.description)}</description><category>${esc(post.category)}</category></item>`).join('')}</channel></rss>\n`,'utf8');
   await generateSite(JSON.parse(await readFile(sitePath, 'utf8')));
