@@ -50,21 +50,34 @@
     const postsRoot = document.getElementById('posts');
     const search = document.getElementById('post-search');
     const categoryRoot = document.getElementById('categories');
-    let articles = [];
+    const cards = [...postsRoot.querySelectorAll('.post-card')];
+    const empty = document.createElement('p');
+    empty.className = 'empty-state';
+    empty.textContent = 'لا توجد مقالات تطابق بحثك الآن.';
     let selectedCategory = 'الكل';
-    const escapeHtml = value => String(value ?? '').replace(/[&<>"']/g, char => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char]));
     function render() {
       const query = search.value.trim().toLocaleLowerCase('ar');
-      const visible = articles.filter(post => (selectedCategory === 'الكل' || post.category === selectedCategory) && (`${post.title} ${post.description} ${post.category} ${(post.tags || []).join(' ')}`).toLocaleLowerCase('ar').includes(query));
-      postsRoot.innerHTML = visible.length ? visible.map(post => `<article class="card post-card"><div class="post-cover" aria-hidden="true">${post.cover ? `<img src="${escapeHtml(post.cover)}" alt="" loading="lazy" width="640" height="360" style="width:100%;height:100%;object-fit:cover">` : 'هُدنة'}</div><div class="post-content"><div class="post-meta"><span class="post-category">${escapeHtml(post.category)}</span><time datetime="${escapeHtml(post.date)}">${new Intl.DateTimeFormat('ar-EG',{year:'numeric',month:'long',day:'numeric'}).format(new Date(`${post.date}T12:00:00`))}</time><span>${escapeHtml(post.readingTime || 4)} دقائق قراءة</span></div><h2><a href="/blog/${encodeURIComponent(post.slug)}/">${escapeHtml(post.title)}</a></h2><p>${escapeHtml(post.description)}</p><a class="read-more" href="/blog/${encodeURIComponent(post.slug)}/" aria-label="اقرأ مقال ${escapeHtml(post.title)}">اقرأ المقال ←</a></div></article>`).join('') : '<p class="empty-state">لا توجد مقالات تطابق بحثك الآن.</p>';
+      let visible = 0;
+      for (const card of cards) {
+        const category = card.querySelector('.post-category')?.textContent.trim() || '';
+        card.hidden = (selectedCategory !== 'الكل' && category !== selectedCategory) || !card.textContent.toLocaleLowerCase('ar').includes(query);
+        if (!card.hidden) visible++;
+      }
+      if (visible || !cards.length) empty.remove(); else postsRoot.append(empty);
     }
     function renderCategories() {
-      const categories = ['الكل', ...new Set(articles.map(post => post.category).filter(Boolean))];
-      categoryRoot.innerHTML = categories.map(category => `<button type="button" aria-pressed="${category === selectedCategory}" data-category="${escapeHtml(category)}">${escapeHtml(category)}</button>`).join('');
-      categoryRoot.addEventListener('click', event => { const button = event.target.closest('button[data-category]'); if (!button) return; selectedCategory = button.dataset.category; renderCategories(); render(); }, {once:true});
+      const categories = ['الكل', ...new Set(cards.map(card => card.querySelector('.post-category')?.textContent.trim()).filter(Boolean))];
+      for (const category of categories) {
+        const button = document.createElement('button');
+        button.type = 'button';
+        button.textContent = category;
+        button.setAttribute('aria-pressed', String(category === selectedCategory));
+        button.addEventListener('click', () => { selectedCategory = category; for (const item of categoryRoot.children) item.setAttribute('aria-pressed', String(item === button)); render(); });
+        categoryRoot.append(button);
+      }
     }
     search.addEventListener('input', render);
-    fetch('/blog/posts.json').then(response => { if (!response.ok) throw new Error('posts'); return response.json(); }).then(data => { articles = data.filter(post => post.status === 'published').sort((a,b) => b.date.localeCompare(a.date)); renderCategories(); render(); }).catch(() => { categoryRoot.textContent = ''; });
+    renderCategories();
   </script>
 </body>
 </html>
