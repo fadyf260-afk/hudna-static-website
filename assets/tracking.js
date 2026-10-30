@@ -1,6 +1,7 @@
 // Public tracking IDs only. Third-party scripts are never requested before consent.
 (async () => {
   if (location.pathname.startsWith('/admin/')) return;
+  const english = document.documentElement?.lang === 'en';
   const patterns = {
     gtmId: /^GTM-[A-Z0-9]{4,20}$/,
     ga4Id: /^G-[A-Z0-9]{4,20}$/,
@@ -48,7 +49,7 @@
       addScript(`https://www.googletagmanager.com/gtag/js?id=${config.ga4Id}`);
     }
     // The marketing tags and GTM run only on the landing page. Article and legal URLs are excluded.
-    if (location.pathname !== '/') return;
+    if (location.pathname !== '/' && location.pathname !== '/en/') return;
     if (value.analytics && value.marketing && config.gtmId && !loaded.has('gtm')) {
       loaded.add('gtm');
       window.dataLayer.push({ 'gtm.start': Date.now(), event: 'gtm.js' });
@@ -89,16 +90,17 @@
   const style = document.createElement('style');
   style.textContent = '.hudna-consent-button{position:fixed;bottom:12px;left:12px;z-index:9998;border:1px solid #aecac1;border-radius:999px;background:#fff;color:#153b34;padding:7px 13px;font:600 13px Cairo,system-ui,sans-serif;cursor:pointer}.hudna-consent-panel{position:fixed;bottom:52px;left:12px;right:12px;z-index:9999;max-width:540px;margin-left:auto;background:#fff;color:#17352f;border:1px solid #bdd6ce;border-radius:16px;box-shadow:0 12px 40px #143d3040;padding:18px;direction:rtl;font:15px Cairo,system-ui,sans-serif}.hudna-consent-panel h2{font-size:18px;margin:0 0 8px}.hudna-consent-panel p{margin:0 0 12px;line-height:1.7}.hudna-consent-panel label{display:block;margin:8px 0}.hudna-consent-panel .actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}.hudna-consent-panel button{border:0;border-radius:9px;padding:8px 12px;background:#e8f2ef;color:#17352f;font:700 13px Cairo,system-ui,sans-serif;cursor:pointer}.hudna-consent-panel button.primary{background:#28776b;color:#fff}';
   style.textContent += '.hudna-consent-panel[hidden]{display:none}';
+  if (english) style.textContent += '.hudna-consent-panel{direction:ltr;font-family:system-ui,sans-serif}.hudna-consent-panel button,.hudna-consent-button{font-family:system-ui,sans-serif}';
   document.head.append(style);
   const settings = document.createElement('button');
   settings.className = 'hudna-consent-button';
   settings.type = 'button';
-  settings.textContent = 'إعدادات التتبع';
+  settings.textContent = english ? 'Tracking settings' : 'إعدادات التتبع';
   document.body.append(settings);
   const panel = document.createElement('section');
   panel.className = 'hudna-consent-panel';
-  panel.setAttribute('aria-label', 'خيارات التتبع');
-  panel.innerHTML = '<h2>خصوصيتك في هُدنة</h2><p>يمكنك السماح بتحليلات الزيارة وأدوات التسويق. لن تعمل الأدوات قبل اختيارك، ويمكنك تغيير قرارك لاحقًا. <a href="/privacy-policy/">سياسة الخصوصية</a></p><label><input type="checkbox" id="hudna-analytics"> السماح بالتحليلات (GA4)</label><label><input type="checkbox" id="hudna-marketing"> السماح بالتسويق (Meta وTikTok)</label><div class="actions"><button type="button" data-choice="reject">رفض غير الضروري</button><button type="button" data-choice="save">حفظ اختياراتي</button><button type="button" class="primary" data-choice="all">الموافقة على الكل</button></div>';
+  panel.setAttribute('aria-label', english ? 'Tracking choices' : 'خيارات التتبع');
+  panel.innerHTML = english ? '<h2>Your privacy at Hudna</h2><p>You can allow visit analytics and marketing tools. They will not load before you choose, and you can change your choice later. <a href="/en/privacy-policy/">Privacy policy</a></p><label><input type="checkbox" id="hudna-analytics"> Allow analytics (GA4)</label><label><input type="checkbox" id="hudna-marketing"> Allow marketing (Meta and TikTok)</label><div class="actions"><button type="button" data-choice="reject">Reject optional</button><button type="button" data-choice="save">Save choices</button><button type="button" class="primary" data-choice="all">Accept all</button></div>' : '<h2>خصوصيتك في هُدنة</h2><p>يمكنك السماح بتحليلات الزيارة وأدوات التسويق. لن تعمل الأدوات قبل اختيارك، ويمكنك تغيير قرارك لاحقًا. <a href="/privacy-policy/">سياسة الخصوصية</a></p><label><input type="checkbox" id="hudna-analytics"> السماح بالتحليلات (GA4)</label><label><input type="checkbox" id="hudna-marketing"> السماح بالتسويق (Meta وTikTok)</label><div class="actions"><button type="button" data-choice="reject">رفض غير الضروري</button><button type="button" data-choice="save">حفظ اختياراتي</button><button type="button" class="primary" data-choice="all">الموافقة على الكل</button></div>';
   const analyticsInput = panel.querySelector('#hudna-analytics');
   const marketingInput = panel.querySelector('#hudna-marketing');
   analyticsInput.checked = choice?.analytics || false;

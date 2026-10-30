@@ -48,6 +48,20 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
+html[lang="en"] body { direction: ltr; font-family: system-ui, -apple-system, "Segoe UI", sans-serif; }
+html[lang="en"] .english-main { max-width: 1100px; }
+html[lang="en"] .english-main .section { padding-block: 64px; }
+html[lang="en"] .english-main .hero { padding-block: 72px; text-align: center; }
+html[lang="en"] .english-main .hero-mark { display: block; margin: 0 auto 18px; }
+html[lang="en"] .english-main .hero-ctas { justify-content: center; }
+html[lang="en"] .english-main .grid { margin-top: 24px; text-align: left; }
+html[lang="en"] .english-main .article { max-width: 850px; margin: 44px auto; padding: clamp(20px,5vw,52px); }
+html[lang="en"] .english-main .article-body { font-size: 18px; line-height: 1.85; }
+html[lang="en"] .english-main .article-body h2 { margin-top: 34px; }
+html[lang="en"] .english-main .legal-content { max-width: 850px; line-height: 1.85; }
+html[lang="en"] .english-main .legal-content h2 { margin-top: 34px; }
+.language-switch { display: inline-flex; align-items: center; border: 1px solid #badbd3; border-radius: 999px; padding: 6px 12px; font-weight: 800; white-space: nowrap; }
+
 a { color: var(--deep); text-decoration: none; transition: color .18s ease; }
 a:hover { color: var(--deep-2); }
 

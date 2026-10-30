@@ -31,5 +31,40 @@
     }
   ],
   "soonTitle": "هُدنة متاح الآن على Google Play",
-  "soonDescription": "ابدأ وقفتك الهادية مع هُدنة. حمّل التطبيق على هاتف Android، وخد لحظة تفهم فيها شعورك قبل قرار الأكل."
+  "soonDescription": "ابدأ وقفتك الهادية مع هُدنة. حمّل التطبيق على هاتف Android، وخد لحظة تفهم فيها شعورك قبل قرار الأكل.",
+  "en": {
+    "seoTitle": "Hudna | A Gentle Pause for Emotional Eating",
+    "seoDescription": "Hudna helps you pause before eating, notice physical hunger and emotions, and respond with kindness. Download the Android app on Google Play.",
+    "heroTitle": "Emotional eating: hunger or a feeling?",
+    "heroSubtitle": "Hudna gives you a quiet moment before deciding to eat. Notice what your body needs and what your feelings may be asking for, without guilt or calorie counting.",
+    "primaryCtaText": "Get Hudna on Google Play",
+    "primaryCtaHref": "https://play.google.com/store/apps/details?id=com.hudna.app",
+    "primaryCtaBadge": "",
+    "howTitle": "Small steps before your next decision",
+    "howDescription": "No diet plan or calorie tracker. Just a gentle pause to understand yourself a little better.",
+    "features": [
+      {
+        "title": "Pause before ordering",
+        "description": "Take a quiet moment and ask yourself a simple question before you decide what to eat."
+      },
+      {
+        "title": "Short exercises for difficult moments",
+        "description": "Gentle exercises when an urge feels strong, without pressure or judgment."
+      },
+      {
+        "title": "Notice recurring times",
+        "description": "Hudna can remind you when you notice a pattern at certain times of day."
+      },
+      {
+        "title": "Restaurant companion",
+        "description": "A little support before ordering food away from home, so your choice feels more intentional."
+      },
+      {
+        "title": "Weekly reflection",
+        "description": "For registered users: a kind look at your week, without uncomfortable numbers."
+      }
+    ],
+    "soonTitle": "Hudna is now on Google Play",
+    "soonDescription": "Start with a gentle pause. Download Hudna for Android and make space to notice how you feel before you decide to eat."
+  }
 }

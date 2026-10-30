@@ -139,6 +139,7 @@ function openEditor(post) {
     document.getElementById(id).value = post?.[id] || (id === 'date' ? new Date().toLocaleDateString('en-CA') : '');
   }
   document.getElementById('tags').value = (post?.tags || []).join('، ');
+  for (const key of ['title','description','category','content']) document.getElementById(`en-${key}`).value = post?.en?.[key] || '';
   document.getElementById('publish-post').textContent = post?.status === 'published' ? 'حفظ التعديلات' : 'نشر المقال';
   preview();
   dialog.showModal();
@@ -219,6 +220,11 @@ function populateSite(site) {
       document.getElementById(id).value = site[key] || '';
     }
     document.getElementById('feature-fields').innerHTML = (site.features || []).map((feature, index) => `<div class="card"><div class="field"><label for="feature-title-${index}">ميزة ${index + 1} — العنوان</label><input id="feature-title-${index}" name="featureTitle${index}" value="${esc(feature.title)}" required /></div><div class="field"><label for="feature-description-${index}">الوصف</label><textarea id="feature-description-${index}" name="featureDescription${index}" required>${esc(feature.description)}</textarea></div></div>`).join('');
+    for (const key of ['seoTitle','seoDescription','heroTitle','heroSubtitle','primaryCtaText','primaryCtaHref','primaryCtaBadge','howTitle','howDescription','soonTitle','soonDescription']) {
+      const id = `en-${key.replace(/[A-Z]/g, letter => `-${letter.toLowerCase()}`)}`;
+      document.getElementById(id).value = site.en?.[key] || '';
+    }
+    document.getElementById('en-feature-fields').innerHTML = (site.en?.features || []).map((feature, index) => `<div class="card"><div class="field"><label for="en-feature-title-${index}">Feature ${index + 1} — title</label><input id="en-feature-title-${index}" name="enFeatureTitle${index}" value="${esc(feature.title)}" required dir="ltr"></div><div class="field"><label for="en-feature-description-${index}">Description</label><textarea id="en-feature-description-${index}" name="enFeatureDescription${index}" required dir="ltr">${esc(feature.description)}</textarea></div></div>`).join('');
 }
 
 async function save(status) {
@@ -230,14 +236,19 @@ async function save(status) {
   const original = posts.find(post => post.slug === editingSlug);
   if (original?.status === 'published' && slug !== original.slug) { notify('لا يمكن تغيير رابط مقال منشور حتى لا تنكسر روابطه في نتائج البحث.'); return; }
   const content = safeContent(data.content);
+  const englishFields = ['enTitle','enDescription','enCategory','enContent'];
+  const hasEnglish = englishFields.some(key => data[key]?.trim());
+  if (hasEnglish && englishFields.some(key => !data[key]?.trim())) { notify('أكمل حقول الترجمة الإنجليزية الأربعة أو اتركها كلها فارغة.'); return; }
+  const english = hasEnglish ? { title:data.enTitle.trim(), description:data.enDescription.trim(), category:data.enCategory.trim(), content:safeContent(data.enContent) } : null;
   const changed = !original || ['title', 'description', 'category', 'date', 'cover', 'content'].some(key => (key === 'content' ? content : data[key]?.trim()) !== original[key]) ||
-    status !== original.status || data.tags.split(/[,،]/).map(tag => tag.trim()).filter(Boolean).join('|') !== (original.tags || []).join('|');
+    status !== original.status || JSON.stringify(english) !== JSON.stringify(original.en || null) || data.tags.split(/[,،]/).map(tag => tag.trim()).filter(Boolean).join('|') !== (original.tags || []).join('|');
   const post = {
     slug, title: data.title.trim(), description: data.description.trim(), category: data.category.trim(),
     tags: data.tags.split(/[,،]/).map(tag => tag.trim()).filter(Boolean), date: data.date, status,
     cover: data.cover.trim(), content,
     readingTime: Math.max(1, Math.ceil(content.replace(/<[^>]*>/g, ' ').trim().split(/\s+/).length / 180)),
     updated: changed ? new Date().toLocaleDateString('en-CA') : (original.updated || original.date), created: original?.created || new Date().toLocaleDateString('en-CA'),
+    ...(english ? { en:english } : {}),
   };
   const next = [...posts.filter(item => item.slug !== editingSlug), post];
   try {
@@ -315,6 +326,12 @@ document.getElementById('delete-post').addEventListener('click', () => deletePos
 document.getElementById('site-form').addEventListener('submit', async event => {
   event.preventDefault();
   const site = Object.fromEntries(new FormData(event.target));
+  site.en = Object.fromEntries(['seoTitle','seoDescription','heroTitle','heroSubtitle','primaryCtaText','primaryCtaHref','primaryCtaBadge','howTitle','howDescription','soonTitle','soonDescription'].map(key => {
+    const field = `en${key[0].toUpperCase()}${key.slice(1)}`;
+    const value = site[field]; delete site[field]; return [key,value];
+  }));
+  site.en.features = Array.from({ length:5 }, (_, index) => ({ title:site[`enFeatureTitle${index}`], description:site[`enFeatureDescription${index}`] }));
+  for (let index=0; index<5; index++) { delete site[`enFeatureTitle${index}`]; delete site[`enFeatureDescription${index}`]; }
   site.features = Array.from({ length: 5 }, (_, index) => ({ title: site[`featureTitle${index}`], description: site[`featureDescription${index}`] }));
   for (let index = 0; index < 5; index++) { delete site[`featureTitle${index}`]; delete site[`featureDescription${index}`]; }
   try {

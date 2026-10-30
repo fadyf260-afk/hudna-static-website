@@ -85,16 +85,26 @@ export function validate(path, content) {
       if (!['draft', 'published'].includes(post.status) || !Array.isArray(post.tags) || post.tags.some(tag => typeof tag !== 'string')) return false;
       if (post.title.length > 100 || post.description.length > 170 || post.content.length > 100000 || !/^\d{4}-\d{2}-\d{2}$/.test(post.date)) return false;
       if (safeArticle(post.content).replaceAll('<br />', '<br>') !== post.content) return false;
+      if (post.en != null) {
+        if (typeof post.en !== 'object' || Array.isArray(post.en)) return false;
+        for (const field of ['title','description','category','content']) if (typeof post.en[field] !== 'string' || !post.en[field].trim()) return false;
+        if (post.en.title.length > 100 || post.en.description.length > 170 || post.en.content.length > 100000) return false;
+        if (safeArticle(post.en.content).replaceAll('<br />','<br>') !== post.en.content) return false;
+      }
       if (typeof post.cover !== 'string' || (post.cover && !/^(https:\/\/|\/(?!\/))/.test(post.cover))) return false;
     }
     return true;
   }
   if (!content || Array.isArray(content) || typeof content !== 'object') return false;
   const fields = ['seoTitle', 'seoDescription', 'heroTitle', 'heroSubtitle', 'primaryCtaText', 'primaryCtaHref', 'primaryCtaBadge', 'howTitle', 'howDescription', 'soonTitle', 'soonDescription'];
-  if (fields.some(field => typeof content[field] !== 'string' || content[field].length > 2000)) return false;
-  if (fields.filter(field => field !== 'primaryCtaBadge').some(field => !content[field].trim())) return false;
-  if (!Array.isArray(content.features) || content.features.length !== 5 || content.features.some(feature => typeof feature.title !== 'string' || !feature.title.trim() || typeof feature.description !== 'string' || !feature.description.trim())) return false;
-  return /^(#[-a-z0-9]+|\/(?!\/)|https:\/\/)/i.test(content.primaryCtaHref);
+  for (const version of [content, content.en]) {
+    if (!version || typeof version !== 'object' || Array.isArray(version)) return false;
+    if (fields.some(field => typeof version[field] !== 'string' || version[field].length > 2000)) return false;
+    if (fields.filter(field => field !== 'primaryCtaBadge').some(field => !version[field].trim())) return false;
+    if (!Array.isArray(version.features) || version.features.length !== 5 || version.features.some(feature => typeof feature.title !== 'string' || !feature.title.trim() || typeof feature.description !== 'string' || !feature.description.trim())) return false;
+    if (!/^(#[-a-z0-9]+|\/(?!\/)|https:\/\/)/i.test(version.primaryCtaHref)) return false;
+  }
+  return true;
 }
 
 export default async function handler(req, res) {

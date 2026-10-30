@@ -23,7 +23,16 @@ for (const url of urls) {
   if (!description) errors.push(`${url}: missing meta description`);
   if (canonical !== url) errors.push(`${url}: canonical mismatch (${canonical})`);
   if (!/<h1(?:\s|>)/i.test(html)) errors.push(`${url}: missing H1`);
-  if (!/<html[^>]+lang="ar"/i.test(html)) errors.push(`${url}: missing Arabic language declaration`);
+  const language = pathname.startsWith('/en/') ? 'en' : 'ar';
+  if (!new RegExp(`<html[^>]+lang="${language}"`, 'i').test(html)) errors.push(`${url}: incorrect language declaration`);
+  const counterpart = language === 'en' ? `${domain}${pathname.slice(3)}` : `${domain}/en${pathname}`;
+  if (urls.includes(counterpart)) {
+    const ar = language === 'ar' ? url : counterpart;
+    const en = language === 'en' ? url : counterpart;
+    for (const [lang, href] of [['ar',ar],['en',en],['x-default',ar]]) {
+      if (!html.includes(`<link rel="alternate" hreflang="${lang}" href="${href}">`)) errors.push(`${url}: missing ${lang} hreflang`);
+    }
+  }
   if (/<meta\s+name="robots"\s+content="[^"]*noindex/i.test(html)) errors.push(`${url}: sitemap includes noindex page`);
   for (const script of html.matchAll(/<script\s+type="application\/ld\+json"[^>]*>([\s\S]*?)<\/script>/gi)) {
     try { JSON.parse(script[1]); } catch { errors.push(`${url}: invalid JSON-LD`); }

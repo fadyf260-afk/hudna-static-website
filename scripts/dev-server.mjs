@@ -3,6 +3,7 @@ import { readFile, writeFile, mkdir, rm, stat, readdir } from 'node:fs/promises'
 import { createServer } from 'node:http';
 import { extname, join, normalize, resolve, sep } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { generateEnglishHome, generateEnglishBlog, generateEnglishStatic, decorateArabic, completeEnglish } from './i18n.mjs';
 
 const root = resolve(import.meta.dirname, '..');
 const port = Number(process.env.PORT || 4173);
@@ -20,6 +21,7 @@ export async function generateSite(site) {
   if (required.some(key => typeof site[key] !== 'string' || !site[key].trim())) throw new Error('invalid_site_content');
   if (!/^(#[-a-z0-9]+|\/(?!\/)|https:\/\/)/i.test(site.primaryCtaHref)) throw new Error('invalid_site_url');
   if (!Array.isArray(site.features) || site.features.length !== 5 || site.features.some(feature => !feature.title?.trim() || !feature.description?.trim())) throw new Error('invalid_site_features');
+  if (!site.en || required.some(key => typeof site.en[key] !== 'string' || !site.en[key].trim()) || !Array.isArray(site.en.features) || site.en.features.length !== 5 || site.en.features.some(feature => !feature.title?.trim() || !feature.description?.trim())) throw new Error('invalid_english_site_content');
   const template = await readFile(join(root, 'scripts', 'templates', 'home.tpl'), 'utf8');
   const homeStructuredData = {
     '@context': 'https://schema.org',
@@ -52,6 +54,9 @@ export async function generateSite(site) {
     html = html.replaceAll(marker, value);
   }
   await writeFile(join(root, 'index.html'), html, 'utf8');
+  const posts = await currentPosts();
+  await generateEnglishHome(site, posts);
+  await decorateArabic('');
   await writeFile(sitePath, `${JSON.stringify(site, null, 2)}\n`, 'utf8');
 }
 
@@ -74,7 +79,11 @@ export async function generate(posts) {
   if (!template.includes(placeholder)) throw new Error('blog_template_missing_placeholder');
   await writeFile(join(root,'blog','index.html'),template.replace(placeholder,cards),'utf8');
   await writeFile(postsPath,`${JSON.stringify(posts,null,2)}\n`,'utf8');
-  const urls = ['','about/','privacy-policy/','terms/','delete-account/','contact/','blog/',...published.map(post=>`blog/${post.slug}/`)];
+  const englishPosts = await generateEnglishBlog(posts);
+  await generateEnglishStatic();
+  for (const path of ['about/','privacy-policy/','terms/','delete-account/','contact/','blog/']) await decorateArabic(path);
+  for (const post of published) await decorateArabic(`blog/${post.slug}/`, completeEnglish(post));
+  const urls = ['','about/','privacy-policy/','terms/','delete-account/','contact/','blog/',...published.map(post=>`blog/${post.slug}/`),'en/','en/about/','en/privacy-policy/','en/terms/','en/delete-account/','en/contact/','en/blog/',...englishPosts.map(post=>`en/blog/${post.slug}/`)];
   await writeFile(join(root,'sitemap.xml'),`<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls.map(path=>`  <url><loc>https://hudnaapp.com/${path}</loc>${path.startsWith('blog/') && path !== 'blog/' ? `<lastmod>${esc(posts.find(p=>`blog/${p.slug}/`===path)?.updated || posts.find(p=>`blog/${p.slug}/`===path)?.date)}</lastmod>`:''}</url>`).join('\n')}\n</urlset>\n`,'utf8');
   const now = published.length ? new Date(`${published[0].updated || published[0].date}T12:00:00Z`).toUTCString() : new Date('2000-01-01T12:00:00Z').toUTCString();
   await writeFile(join(root,'feed.xml'),`<?xml version="1.0" encoding="UTF-8"?>\n<rss version="2.0"><channel><title>مدونة هُدنة</title><link>https://hudnaapp.com/blog/</link><description>مقالات هادئة عن الأكل العاطفي والوعي بالمشاعر.</description><language>ar</language><lastBuildDate>${now}</lastBuildDate>${published.map(post=>`<item><title>${esc(post.title)}</title><link>https://hudnaapp.com/blog/${post.slug}/</link><guid>https://hudnaapp.com/blog/${post.slug}/</guid><pubDate>${new Date(`${post.date}T12:00:00Z`).toUTCString()}</pubDate><description>${esc(post.description)}</description><category>${esc(post.category)}</category></item>`).join('')}</channel></rss>\n`,'utf8');

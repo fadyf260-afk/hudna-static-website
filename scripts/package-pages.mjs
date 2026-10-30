@@ -5,7 +5,7 @@ const root = resolve(import.meta.dirname, '..');
 const output = join(root, '.site-dist');
 await rm(output, { recursive: true, force: true });
 await mkdir(output, { recursive: true });
-for (const path of ['assets', 'styles', 'admin', 'about', 'blog', 'contact', 'delete-account', 'privacy-policy', 'terms', 'CNAME', 'index.html', 'robots.txt', 'sitemap.xml', 'feed.xml', 'tracking-config.json']) {
+for (const path of ['assets', 'styles', 'admin', 'about', 'blog', 'contact', 'delete-account', 'privacy-policy', 'terms', 'en', 'CNAME', 'index.html', 'robots.txt', 'sitemap.xml', 'feed.xml', 'tracking-config.json']) {
   await cp(join(root, path), join(output, path), { recursive: true });
 }
 await rm(join(output, 'blog', 'posts.json'));

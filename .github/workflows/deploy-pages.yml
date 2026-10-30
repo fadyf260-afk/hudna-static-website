@@ -10,6 +10,7 @@ on:
       - 'blog/**'
       - 'contact/**'
       - 'delete-account/**'
+      - 'en/**'
       - 'privacy-policy/**'
       - 'terms/**'
       - 'styles/**'
