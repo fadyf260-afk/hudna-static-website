@@ -57,7 +57,7 @@ export async function generateSite(site) {
   await writeFile(join(root, 'index.html'), html, 'utf8');
   const posts = await currentPosts();
   await generateEnglishHome(site, posts);
-  await addHomeContact(root);
+  await addHomeContact(root, site);
   await decorateArabic('');
   await writeFile(sitePath, `${JSON.stringify(site, null, 2)}\n`, 'utf8');
 }

@@ -216,6 +216,7 @@ async function loadTracking() {
 }
 
 function populateSite(site) {
+    for (const key of ["whatsappNumber","facebookUrl","tiktokUrl","instagramUrl","paymentTitle","paymentDescription","paymentTitleEn","paymentDescriptionEn"]) document.getElementById('contact-'+key).value = site[key] ?? '';
     for (const [key, id] of Object.entries({ seoTitle: 'site-seo-title', seoDescription: 'site-seo-description', heroTitle: 'site-hero-title', heroSubtitle: 'site-hero-subtitle', primaryCtaText: 'site-primary-cta-text', primaryCtaHref: 'site-primary-cta-href', primaryCtaBadge: 'site-primary-cta-badge', howTitle: 'site-how-title', howDescription: 'site-how-description', soonTitle: 'site-soon-title', soonDescription: 'site-soon-description' })) {
       document.getElementById(id).value = site[key] || '';
     }

@@ -97,6 +97,14 @@ export function validate(path, content) {
   }
   if (!content || Array.isArray(content) || typeof content !== 'object') return false;
   const fields = ['seoTitle', 'seoDescription', 'heroTitle', 'heroSubtitle', 'primaryCtaText', 'primaryCtaHref', 'primaryCtaBadge', 'howTitle', 'howDescription', 'soonTitle', 'soonDescription'];
+  for (const key of ['whatsappNumber','facebookUrl','tiktokUrl','instagramUrl','paymentTitle','paymentDescription','paymentTitleEn','paymentDescriptionEn']) {
+    if (content[key] !== undefined && (typeof content[key] !== 'string' || content[key].length > 2000)) return false;
+  }
+  const phone = (content.whatsappNumber || '').replace(/[+ ()-]/g, '');
+  if (phone && !/^(?:01[0-9]{9}|[1-9][0-9]{7,14})$/.test(phone)) return false;
+  for (const key of ['facebookUrl','tiktokUrl','instagramUrl']) {
+    if (content[key]) { try { if (new URL(content[key]).protocol !== 'https:') return false; } catch { return false; } }
+  }
   for (const version of [content, content.en]) {
     if (!version || typeof version !== 'object' || Array.isArray(version)) return false;
     if (fields.some(field => typeof version[field] !== 'string' || version[field].length > 2000)) return false;

@@ -39,7 +39,14 @@
             <div class="field full"><label for="site-how-description">وصف قسم المزايا</label><textarea id="site-how-description" name="howDescription" required></textarea></div>
             <div class="field"><label for="site-soon-title">عنوان قسم التطبيق</label><input id="site-soon-title" name="soonTitle" required /></div>
             <div class="field"><label for="site-soon-description">وصف قسم التطبيق</label><textarea id="site-soon-description" name="soonDescription" required></textarea></div>
-            <div class="field full"><label>بطاقات المزايا الخمس</label><div id="feature-fields" class="grid cols-2"></div></div>
+            <div class="field full"><h3>التواصل والدفع بالمحفظة</h3><p class="hint">هذه البيانات تظهر في الرئيسية باللغتين. اترك رابط السوشيال أو رقم واتساب فارغًا لإخفائه. أدخل رقم واتساب مع كود الدولة؛ الرقم المصري الذي يبدأ بـ 01 يُحوّل تلقائيًا.</p></div><div class="field"><label for="contact-whatsappNumber">رقم واتساب بالصيغة الدولية — مثال: 201551089713</label><input id="contact-whatsappNumber" name="whatsappNumber" type="tel" pattern="[+0-9 ()-]{8,22}" dir="ltr"></div>
+<div class="field"><label for="contact-facebookUrl">رابط Facebook</label><input id="contact-facebookUrl" name="facebookUrl" type="url" pattern="https://.*" dir="ltr"></div>
+<div class="field"><label for="contact-tiktokUrl">رابط TikTok</label><input id="contact-tiktokUrl" name="tiktokUrl" type="url" pattern="https://.*" dir="ltr"></div>
+<div class="field"><label for="contact-instagramUrl">رابط Instagram</label><input id="contact-instagramUrl" name="instagramUrl" type="url" pattern="https://.*" dir="ltr"></div>
+<div class="field"><label for="contact-paymentTitle">عنوان الدفع بالمحفظة</label><input id="contact-paymentTitle" name="paymentTitle" required maxlength="200" ></div>
+<div class="field"><label for="contact-paymentDescription">تفاصيل الدفع بالمحفظة</label><textarea id="contact-paymentDescription" name="paymentDescription" required maxlength="2000"></textarea></div>
+<div class="field"><label for="contact-paymentTitleEn">Payment title (English)</label><input id="contact-paymentTitleEn" name="paymentTitleEn" required maxlength="200" dir="ltr"></div>
+<div class="field"><label for="contact-paymentDescriptionEn">Payment details (English)</label><textarea id="contact-paymentDescriptionEn" name="paymentDescriptionEn" required maxlength="2000"></textarea></div><div class="field full"><label>بطاقات المزايا الخمس</label><div id="feature-fields" class="grid cols-2"></div></div>
             <div class="field full"><h3>English homepage · الصفحة الإنجليزية</h3><p class="hint">المحتوى هنا يظهر في /en/، وله عنوان ووصف مستقلان في Google.</p></div>
             <div class="field full"><label for="en-seo-title">English SEO title</label><input id="en-seo-title" name="enSeoTitle" required maxlength="75" dir="ltr"></div>
             <div class="field full"><label for="en-seo-description">English meta description</label><textarea id="en-seo-description" name="enSeoDescription" required maxlength="170" dir="ltr"></textarea></div>
