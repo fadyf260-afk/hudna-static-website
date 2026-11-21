@@ -1,4 +1,5 @@
 import { createHash } from 'node:crypto';
+import { addHomeContact } from './home-contact.mjs';
 import { readFile, writeFile, mkdir, rm, stat, readdir } from 'node:fs/promises';
 import { createServer } from 'node:http';
 import { extname, join, normalize, resolve, sep } from 'node:path';
@@ -56,6 +57,7 @@ export async function generateSite(site) {
   await writeFile(join(root, 'index.html'), html, 'utf8');
   const posts = await currentPosts();
   await generateEnglishHome(site, posts);
+  await addHomeContact(root);
   await decorateArabic('');
   await writeFile(sitePath, `${JSON.stringify(site, null, 2)}\n`, 'utf8');
 }
